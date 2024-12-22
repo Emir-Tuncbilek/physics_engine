@@ -13,6 +13,8 @@
 #include <algorithm>
 #include <iterator>
 #include <ostream>
+#include <cmath>
+#include <memory>
 
 class PhysicsState {
 private:
