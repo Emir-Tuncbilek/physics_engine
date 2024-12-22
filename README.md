@@ -20,8 +20,7 @@ The current Makefile is made for MacOS, however with minor tweeks you should be 
 -  Inertia induced by collisions
 -  Variable forces
 -  Variable force vector-fields
--  Write tests
--  Create CI/CD pipeline
+-  Write real tests
 
 
 ### Author
