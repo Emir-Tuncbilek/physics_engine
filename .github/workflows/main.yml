@@ -13,33 +13,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout the repository and submodules (if using submodules for GoogleTest)
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           submodules: recursive
 
-      - name: Set up CMake
-        uses: jwlawson/actions-setup-cmake@v1
-        with:
-          cmake-version: '3.24'
-
-      - name: Set up GCC
-        uses: actions/setup-cpp@v1
-        with:
-          compiler: 'gcc'
-
+      # Install dependencies (e.g., SDL2, GLEW, GLM, etc.)
       - name: Install Dependencies
         run: sudo apt-get update && sudo apt-get install -y \
-          libsdl2-dev libglew-dev libglm-dev freeglut3-dev
+          cmake gcc g++ libsdl2-dev libglew-dev libglm-dev freeglut3-dev
 
+      # Create a build directory
       - name: Create build directory
         run: mkdir -p build
 
+      # Configure the project with CMake
       - name: Configure with CMake
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
 
+      # Build the project
       - name: Build the project
         run: cmake --build build -- -j$(nproc)
 
+      # Run tests using CTest
       - name: Run Tests
         run: cd build && ctest --output-on-failure -j$(nproc)
