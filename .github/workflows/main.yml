@@ -23,6 +23,8 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
+          sudo apt-get install -y libfreeimage-dev
+          sudo apt-get update
           sudo apt-get install -y \
               gcc g++ libsdl2-dev libglew-dev libglm-dev freeglut3-dev
           # Install the latest CMake from the official repository
