@@ -9,5 +9,5 @@ inline int foo() { return 34; }
 
 TEST(TestSuite, foo) {
     EXPECT_EQ(foo(), 34);
-    ASSERT_EQ(foo(), 33) << "Something went wrong...\n";
+    ASSERT_EQ(foo(), 34) << "Something went wrong...\n";
 }
