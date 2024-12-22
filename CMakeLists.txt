@@ -4,6 +4,12 @@ project(physics_engine)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# GoogleTests
+include(CTest)
+enable_testing()
+add_subdirectory(external)
+add_subdirectory(tests)
+
 # Manually add GLEW paths if find_package fails
 find_package(OpenGL REQUIRED)
 
@@ -42,7 +48,13 @@ add_executable(physics_engine
         graphics/Resources.cpp graphics/Resources.h
         graphics/models.cpp graphics/models.h
         graphics/shapes.cpp graphics/shapes.h
-        objects/RenderObject.cpp objects/RenderObject.h physics/physicsState.h physics/forces.cpp physics/forces.h objects/FloorObject.cpp objects/FloorObject.h objects/F1Object.cpp objects/F1Object.h objects/ParticuleObject.cpp objects/ParticuleObject.h objects/CloudParticuleObject.cpp objects/CloudParticuleObject.h physics/physicsState.cpp)
+        objects/RenderObject.cpp objects/RenderObject.h
+        physics/physicsState.h physics/physicsState.cpp
+        physics/forces.cpp physics/forces.h
+        objects/FloorObject.cpp objects/FloorObject.h
+        objects/F1Object.cpp objects/F1Object.h
+        objects/ParticuleObject.cpp objects/ParticuleObject.h
+        objects/CloudParticuleObject.cpp objects/CloudParticuleObject.h)
 
 # Link the OpenGL, GLEW, and context libraries
 target_link_libraries(physics_engine

@@ -1,0 +1,27 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - main  # Replace with your default branch name if not "main"
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake build-essential libglew-dev libsdl2-dev libglm-dev libfreeimage-dev
+
+      - name: Configure project with CMake
+        run: cmake -S . -B build
+
+      - name: Build project
+        run: cmake --build build --parallel
+
+      - name: Run tests
+        run: ctest --test-dir build/tests --output-on-failure
