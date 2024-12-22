@@ -1,8 +1,7 @@
 # Physics Engine in C/C++
-This project aims for building a 3D physics engine in plain C/C++ with an integrated graphics rendering
 
 ### Description
-An in-depth paragraph about your project and overview of use.
+This project aims for building a 3D physics engine in plain C/C++ with an integrated graphics rendering
 
 ### Getting Started
 the simplest way to get started is by running the command "make" at the root of the directory. This will compile and create an executable of "main.cpp".
