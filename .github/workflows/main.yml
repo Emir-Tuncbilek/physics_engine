@@ -3,8 +3,10 @@ name: Build and Test
 on:
   push:
     branches:
-      - main  # Replace with your default branch name if not "main"
+      - main
   pull_request:
+    branches:
+      - main
 
 jobs:
   build-and-test:
@@ -13,18 +15,31 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y cmake build-essential libglew-dev libsdl2-dev libglm-dev libfreeimage-dev
+      - name: Set up CMake
+        uses: jwlawson/actions-setup-cmake@v1
+        with:
+          cmake-version: '3.24'
 
-      # - name: Clone GoogleTests
-        # run: rm -rf ./external/googletest && git submodule add https://github.com/google/googletest.git ./external/googletest
+      - name: Set up GCC
+        uses: actions/setup-cpp@v1
+        with:
+          compiler: 'gcc'
 
-      - name: Configure project with CMake
-        run: cmake -S . -B build
+      - name: Install Dependencies
+        run: sudo apt-get update && sudo apt-get install -y \
+          libsdl2-dev libglew-dev libglm-dev freeglut3-dev
 
-      - name: Build project
-        run: cmake --build build --parallel
+      - name: Create build directory
+        run: mkdir -p build
 
-      - name: Run tests
-        run: ctest --test-dir build/tests --output-on-failure
+      - name: Configure with CMake
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build the project
+        run: cmake --build build -- -j$(nproc)
+
+      - name: Run Tests
+        run: cd build && ctest --output-on-failure -j$(nproc)
