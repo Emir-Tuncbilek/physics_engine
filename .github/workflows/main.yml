@@ -19,10 +19,19 @@ jobs:
         with:
           submodules: recursive
 
-      # Install dependencies (e.g., SDL2, GLEW, GLM, etc.)
+      # Install dependencies (add CMake installation from official repo)
       - name: Install Dependencies
-        run: sudo apt-get update && sudo apt-get install -y \
-          cmake gcc g++ libsdl2-dev libglew-dev libglm-dev freeglut3-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+              gcc g++ libsdl2-dev libglew-dev libglm-dev freeglut3-dev
+          # Install the latest CMake from the official repository
+          sudo apt-get install -y software-properties-common
+          sudo apt-get update
+          sudo apt-get install -y wget
+          wget https://github.com/Kitware/CMake/releases/download/v3.26.1/cmake-3.26.1-linux-x86_64.sh
+          sudo bash cmake-3.26.1-linux-x86_64.sh --prefix=/usr/local --skip-license
+          rm cmake-3.26.1-linux-x86_64.sh
 
       # Create a build directory
       - name: Create build directory
