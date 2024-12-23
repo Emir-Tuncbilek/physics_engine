@@ -4,14 +4,7 @@
 This project aims for building a 3D physics engine in plain C/C++ with an integrated graphics rendering
 
 ### Getting Started
-the simplest way to get started is by running the command "make" at the root of the directory. This will compile and create an executable of "main.cpp".
-
-### Dependencies
-The current Makefile is made for MacOS, however with minor tweeks you should be able to build for Windows and Linux. The dependancies needed for this project are listed below :
--  OpenGL
--  SDL2
--  GLEW
--  GLM
+The simplest way to get started is by running the command "make" at the root of the directory. This will compile and create an executable of "main.cpp" for MacOS. The MakeFile is not necessary for the execution of this project, because CMake is already configured. I just used a Makefile to start with, and eventually migrated to CMake, in order to better accomadate IDEs such as CLion, and to simplify my learning of GoogleTest.  
 
 ### Features left to implement
 -  Octree for collision detection
@@ -20,8 +13,7 @@ The current Makefile is made for MacOS, however with minor tweeks you should be 
 -  Inertia induced by collisions
 -  Variable forces
 -  Variable force vector-fields
--  Write tests
--  Create CI/CD pipeline
+-  Write real tests
 
 
 ### Author
