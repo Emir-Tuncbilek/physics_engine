@@ -13,40 +13,45 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository and submodules (if using submodules for GoogleTest)
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           submodules: recursive
 
-      # Install dependencies (add CMake installation from official repo)
-      - name: Install Dependencies
+      - name: Install dependencies from requirements.txt
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libfreeimage-dev
-          sudo apt-get update
-          sudo apt-get install -y \
-              gcc g++ libsdl2-dev libglew-dev libglm-dev freeglut3-dev
-          # Install the latest CMake from the official repository
-          sudo apt-get install -y software-properties-common
-          sudo apt-get update
-          sudo apt-get install -y wget
-          wget https://github.com/Kitware/CMake/releases/download/v3.26.1/cmake-3.26.1-linux-x86_64.sh
-          sudo bash cmake-3.26.1-linux-x86_64.sh --prefix=/usr/local --skip-license
-          rm cmake-3.26.1-linux-x86_64.sh
+            xargs sudo apt-get install -y < requirements.txt
 
-      # Create a build directory
+      - name: Install custom CMake
+        run: |
+            sudo apt-get install -y software-properties-common wget
+            wget https://github.com/Kitware/CMake/releases/download/v3.26.1/cmake-3.26.1-linux-x86_64.sh
+            sudo bash cmake-3.26.1-linux-x86_64.sh --prefix=/usr/local --skip-license
+            rm cmake-3.26.1-linux-x86_64.sh
+
+      #- name: Install Dependencies
+      #  run: |
+      #    sudo apt-get update
+      #    sudo apt-get install -y libfreeimage-dev
+      #    sudo apt-get update
+      #    sudo apt-get install -y \
+      #        gcc g++ libsdl2-dev libglew-dev libglm-dev freeglut3-dev
+      #    # Install the latest CMake from the official repository
+      #    sudo apt-get install -y software-properties-common
+      #    sudo apt-get update
+      #    sudo apt-get install -y wget
+      #    wget https://github.com/Kitware/CMake/releases/download/v3.26.1/cmake-3.26.1-linux-x86_64.sh
+      #    sudo bash cmake-3.26.1-linux-x86_64.sh --prefix=/usr/local --skip-license
+      #    rm cmake-3.26.1-linux-x86_64.sh
+
       - name: Create build directory
         run: mkdir -p build
 
-      # Configure the project with CMake
       - name: Configure with CMake
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
 
-      # Build the project
       - name: Build the project
         run: cmake --build build -- -j$(nproc)
 
-      # Run tests using CTest
       - name: Run Tests
         run: cd build && ctest --output-on-failure -j$(nproc)
