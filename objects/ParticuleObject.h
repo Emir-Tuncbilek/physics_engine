@@ -6,6 +6,7 @@
 #define PHYSICS_ENGINE_PARTICULEOBJECT_H
 
 #include "./RenderObject.h"
+#include "./collision-detection/BoundingBox.h"
 
 class ParticuleObject : public RenderObject {
 public:
@@ -15,6 +16,7 @@ public:
     ~ParticuleObject() = default;
 
     void init() override;
+    std::vector<std::shared_ptr<RenderObject>> getObjects() const override;
     void render(glm::mat4 &view, glm::mat4 &projPersp, const float& delta_t) override;
 
 public:

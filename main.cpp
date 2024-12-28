@@ -47,24 +47,24 @@ int main() {
 
     Resources resources;
 
-    std::unique_ptr<F1Object> car = std::make_unique<F1Object>("../3DObjects/cube.obj");    // load a cube instead of the F1 object for faster rendering
+    std::shared_ptr<F1Object> car = std::make_shared<F1Object>("../3DObjects/cube.obj");    // load a cube instead of the F1 object for faster rendering
     // std::unique_ptr<F1Object> car = std::make_unique<F1Object>("../3DObjects/F1_2026.obj");
     car->shaderPaths.emplace_back("../shaders/f1CarShader.vs.glsl", GL_VERTEX_SHADER);
     car->shaderPaths.emplace_back("../shaders/f1CarShader.fs.glsl", GL_FRAGMENT_SHADER);
     car->init();
-    resources.addObject(std::move(car));
+    resources.addObject(car);
 
-    std::unique_ptr<CloudParticuleObject> particuleCloud = std::make_unique<CloudParticuleObject>("../3DObjects/cube.obj", NUM_PARTICULES, CLOUD_WIDTH, CLOUD_HEIGHT, CLOUD_SPEED);
+    std::shared_ptr<CloudParticuleObject> particuleCloud = std::make_shared<CloudParticuleObject>("../3DObjects/cube.obj", NUM_PARTICULES, CLOUD_WIDTH, CLOUD_HEIGHT, CLOUD_SPEED);
     particuleCloud->shaderPaths.emplace_back("../shaders/particule.vs.glsl", GL_VERTEX_SHADER);
     particuleCloud->shaderPaths.emplace_back("../shaders/particule.fs.glsl", GL_FRAGMENT_SHADER);
     particuleCloud->init();
-    resources.addObject(std::move(particuleCloud));
+    resources.addObject(particuleCloud);
 
-    std::unique_ptr<FloorObject> floor = std::make_unique<FloorObject>("../3DObjects/cube.obj");
+    std::shared_ptr<FloorObject> floor = std::make_shared<FloorObject>("../3DObjects/cube.obj");
     floor->shaderPaths.emplace_back("../shaders/floor.vs.glsl", GL_VERTEX_SHADER);
     floor->shaderPaths.emplace_back("../shaders/floor.fs.glsl", GL_FRAGMENT_SHADER);
     floor->init();
-    resources.addObject(std::move(floor));
+    resources.addObject(floor);
 
     Scene scene(resources);
 

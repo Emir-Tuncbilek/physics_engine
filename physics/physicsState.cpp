@@ -4,9 +4,9 @@
 
 #include "physicsState.h"
 
-PhysicsState::PhysicsState(const float delta_t,
-                           const float mass,
-                           const float momentOfInertia,
+PhysicsState::PhysicsState(const float& delta_t,
+                           const float& mass,
+                           const float& momentOfInertia,
                            const float *position,
                            const float *orientation,
                            const float *velocity,

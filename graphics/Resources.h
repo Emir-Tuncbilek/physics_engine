@@ -12,11 +12,11 @@
 
 class Resources {
 public:
-    std::vector<std::unique_ptr<RenderObject>> objects;
+    std::vector<std::shared_ptr<RenderObject>> objects;
 public:
     Resources();
     ~Resources();
-    void addObject(std::unique_ptr<RenderObject> object);
+    void addObject(const std::shared_ptr<RenderObject>& object);
 };
 
 #endif //PHYSICS_ENGINE_RESOURCES_H

@@ -54,7 +54,7 @@ add_executable(physics_engine
         objects/FloorObject.cpp objects/FloorObject.h
         objects/F1Object.cpp objects/F1Object.h
         objects/ParticuleObject.cpp objects/ParticuleObject.h
-        objects/CloudParticuleObject.cpp objects/CloudParticuleObject.h)
+        objects/CloudParticuleObject.cpp objects/CloudParticuleObject.h objects/collision-detection/BoundingVolume.cpp objects/collision-detection/BoundingVolume.h objects/collision-detection/BoundingSphere.cpp objects/collision-detection/BoundingSphere.h objects/collision-detection/BoundingBox.cpp objects/collision-detection/BoundingBox.h objects/collision-detection/CollisionMesh.cpp objects/collision-detection/CollisionMesh.h objects/collision-detection/SAT_collisions.cpp objects/collision-detection/SAT_collisions.h)
 
 # Link the OpenGL, GLEW, and context libraries
 target_link_libraries(physics_engine
@@ -70,3 +70,4 @@ if(APPLE)
         target_link_libraries(physics_engine "-lobjc -framework Foundation -framework Cocoa")
     endif()
 endif()
+

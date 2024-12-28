@@ -10,18 +10,16 @@ BasicShapeElements::BasicShapeElements() {
     glGenBuffers(1, &this->m_ebo);
     glBindVertexArray(this->m_vao);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->m_ebo);
+
 }
 
 BasicShapeElements::BasicShapeElements(const GLfloat* data, GLsizeiptr byteSize, const GLuint* indexes, GLsizeiptr indexesByteSize) {
     glGenVertexArrays(1, &this->m_vao);
     glBindVertexArray(this->m_vao);
     glGenBuffers(1, &this->m_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glBufferData(GL_ARRAY_BUFFER, byteSize, data, GL_STATIC_DRAW);
-
     glGenBuffers(1, &m_ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexesByteSize, indexes, GL_STATIC_DRAW);
+
+    this->setData(data, byteSize, indexes, indexesByteSize);
 }
 
 BasicShapeElements::~BasicShapeElements() {
@@ -34,7 +32,6 @@ BasicShapeElements::~BasicShapeElements() {
 }
 
 void BasicShapeElements::setData(const GLfloat* data, GLsizeiptr byteSize, const GLuint* indexes, GLsizeiptr indexesByteSize) {
-    // glBindVertexArray(this->m_vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, this->m_vbo);
     glBufferData(GL_ARRAY_BUFFER, byteSize, data, GL_STATIC_DRAW);
@@ -44,15 +41,12 @@ void BasicShapeElements::setData(const GLfloat* data, GLsizeiptr byteSize, const
 }
 
 void BasicShapeElements::enableAttribute(GLuint index, GLint size, GLsizei stride, GLsizeiptr offset) {
-    // glBindVertexArray(this->m_vao);
-    // glBindBuffer(GL_ARRAY_BUFFER, this->m_vbo);
     glVertexAttribPointer(index, size, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), (GLvoid*)(offset * sizeof(GLfloat)));
     glEnableVertexAttribArray(index);
 }
 
 void BasicShapeElements::draw(GLenum mode, GLsizei count) const {
     glBindVertexArray(this->m_vao);
-    glDrawElements(mode, count, GL_UNSIGNED_INT, 0);
+    glDrawElements(mode, count, GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
-
 }

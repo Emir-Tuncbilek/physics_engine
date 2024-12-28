@@ -46,6 +46,6 @@ void Model::loadObj(const char* path, std::vector<GLfloat>& vertexData, std::vec
     indices = loader.LoadedIndices;
 }
 
-void Model::draw() {
+void Model::draw() const {
     this->m_shape.draw(GL_TRIANGLES, this->m_count);
 }

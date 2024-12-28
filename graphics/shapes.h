@@ -10,21 +10,6 @@
 #include <iostream>
 #include <vector>
 
-class BasicShapeArrays
-{
-public:
-    BasicShapeArrays();
-    BasicShapeArrays(const GLfloat* data, GLsizeiptr byteSize);
-    ~BasicShapeArrays();
-
-    void enableAttribute(GLuint index, GLint size, GLsizei stride, GLsizeiptr offset);
-    void draw(GLenum mode, GLsizei count);
-
-private:
-    GLuint m_vao;
-    GLuint m_vbo;
-};
-
 class BasicShapeElements {
 public:
     BasicShapeElements();
@@ -40,6 +25,7 @@ private:
     GLuint m_vao;
     GLuint m_vbo;
     GLuint m_ebo;
+
 };
 
 #endif //PHYSICS_ENGINE_SHAPES_H

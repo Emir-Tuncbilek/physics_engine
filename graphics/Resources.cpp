@@ -9,4 +9,4 @@ Resources::Resources() : objects() {}
 
 Resources::~Resources() = default;
 
-void Resources::addObject(std::unique_ptr<RenderObject> object) { this->objects.push_back(std::move(object)); }
+void Resources::addObject(const std::shared_ptr<RenderObject>& object) { this->objects.push_back(object); }

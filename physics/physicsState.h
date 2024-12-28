@@ -33,9 +33,9 @@ public:
 
     float maximumRadius;
 
-    PhysicsState(const float delta_t,
-                 const float mass,
-                 const float momentOfInertia,
+    PhysicsState(const float& delta_t,
+                 const float& mass,
+                 const float& momentOfInertia,
                  const float position[3],
                  const float orientation[3],
                  const float velocity[3],
@@ -58,8 +58,8 @@ public:
     void updateTimeDelta(const float time) { this->delta_t = time; }
     float getMass() const { return this->mass; }
     float getMomentOfInertia() const { return this->momentOfInertia; }
-    float* getPositionOfCM() { return this->position; }
-    float * getVelocity() { return this->velocity; }
+    float * getPositionOfCM() { return this->position; }
+    float * getOrientation() { return this->orientation; }
 
     friend std::ostream& operator << (std::ostream& o, const PhysicsState& physicsState);
 };

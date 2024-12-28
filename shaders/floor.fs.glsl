@@ -9,6 +9,7 @@ in vec3 normal;
 out vec4 FragColor;
 
 void main() {
-    vec3 color = vec3(0.9f, 0.1f, 0.1f);
+    vec3 colorNormal = vec3(0.75f) - 0.75f * normal;
+    vec3 color = vec3(0.9f * colorNormal.r, 0.1f * colorNormal.g, 0.1f * colorNormal.b);
     FragColor = vec4(color, 1.0f);
 }

@@ -18,7 +18,7 @@ void CloudParticuleObject::init() {
     size_t updateInterval = totalParticles / 100; // Update every 1% of particules loaded
     float totalParticuleSpeed = 0.0f;
     for (size_t i = 0; i < totalParticles; i++) {
-        std::unique_ptr<ParticuleObject> o = std::make_unique<ParticuleObject>(
+        std::shared_ptr<ParticuleObject> o = std::make_shared<ParticuleObject>(
                 this->particuleObjectPath,
                 randomFloatInRange(-this->_maxXDistance, this->_maxXDistance),
                 randomFloatInRange(-this->_maxYDistance, this->_maxYDistance)
@@ -39,6 +39,14 @@ void CloudParticuleObject::init() {
     float velocity[DIMENSIONS] = { totalParticuleSpeed/(float)totalParticles, 0.0f, 0.0f };         // the velocity of the cloud is simply the average speed of all the particules
     this->physics = std::make_shared<PhysicsState>(0.0f, 1.0f, 0.0f, pos, zeros, velocity, zeros);  // helps picture the cloud of particules as a single rigid body
     std::cout << "Loading: 100% complete!" << std::endl;
+}
+
+std::vector<std::shared_ptr<RenderObject>> CloudParticuleObject::getObjects() const {
+    std::vector<std::shared_ptr<RenderObject>> objects;
+    objects.reserve(this->_numParticules);
+    // copy the particules (can't return the particules directly because method is constant)
+    for (auto && particule : this->particules) { objects.push_back(std::make_shared<ParticuleObject>(*particule)); }
+    return objects;
 }
 
 void CloudParticuleObject::render(glm::mat4 &view, glm::mat4 &projPersp, const float& delta_t) {

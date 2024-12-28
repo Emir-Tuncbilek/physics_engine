@@ -15,14 +15,15 @@
 class Model {
 public:
     explicit Model(const char* path);
-    void draw();
+    void draw() const;
     std::vector<GLfloat> vertexData;
+
 private:
     static void loadObj(const char* path, std::vector<GLfloat>& vertexData, std::vector<GLuint>& indices);
 
 private:
-    BasicShapeElements m_shape;
     GLsizei m_count;
+    BasicShapeElements m_shape;
 };
 
 #endif //PHYSICS_ENGINE_MODELS_H

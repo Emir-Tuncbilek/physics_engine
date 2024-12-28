@@ -9,12 +9,12 @@ layout (location = 2) in vec3 normals;
 
 uniform mat4 U_MVP;
 
-out vec3 fragPos;
+out vec3 vertexPosOut;
 out vec3 normal;
 
-
 void main() {
-    fragPos = position;
+    vec4 pos = vec4(U_MVP * vec4(position.xyz, 1.0));
+    vertexPosOut = vec3(pos.xyz);
     normal = normals;
-    gl_Position = U_MVP * vec4(position.xyz, 1.0);
+    gl_Position = pos;
 }

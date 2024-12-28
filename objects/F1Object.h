@@ -6,6 +6,7 @@
 #define PHYSICS_ENGINE_F1OBJECT_H
 
 #include "RenderObject.h"
+#include "./collision-detection/BoundingBox.h"
 
 class F1Object : public RenderObject {
 public:
@@ -14,6 +15,7 @@ public:
     ~F1Object() = default;
 
     void init() override;
+    std::vector<std::shared_ptr<RenderObject>> getObjects() const override;
     void render(glm::mat4 &view, glm::mat4 &projPersp, const float& delta_t) override;
 };
 
