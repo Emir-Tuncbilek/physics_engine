@@ -8,7 +8,6 @@ The simplest way to get started is by running the command "make" at the root of 
 
 ### Features left to implement
 -  Octree for collision detection
--  Mesh-wise collision detection
 -  Object orientation
 -  Inertia induced by collisions
 -  Variable forces
