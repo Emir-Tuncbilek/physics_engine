@@ -16,11 +16,11 @@ protected:
     virtual void apply(std::shared_ptr<PhysicsState>& physicsState);
 
 private:
-    float _force[3];
-    float * _pointOfApplication;
+    std::vector<float> _force;
+    std::vector<float> _pointOfApplication;
 
 public:
-    Force(const float force[], const float pointOfApplication[]);
+    Force(const std::vector<float>& force , const std::vector<float>& pointOfApplication);
 
     Force(const Force& f);
 
@@ -34,10 +34,10 @@ protected:
     void apply(std::shared_ptr<PhysicsState>& physicsState) override;
 
 private:
-    float _forceField[3];
+    std::vector<float> _forceField;
 
 public:
-    ForceField(const float field[]);
+    ForceField(const std::vector<float>& field);
 
     void apply(std::vector<std::shared_ptr<PhysicsState>>& physicsState) override;
 };

@@ -10,6 +10,10 @@
 #include <SDL.h>
 #include <iostream>
 
+#include "./public-libs/imgui/imgui.h"
+#include "./public-libs/imgui/backends/imgui_impl_sdl2.h"
+#include "./public-libs/imgui/backends/imgui_impl_opengl3.h"
+
 class Window {
 public:
     enum Keys {

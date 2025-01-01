@@ -51,3 +51,7 @@ float BoundingSphere::getMax(const std::vector<float>& axis) const {
     // Project the center onto the axis and add the radius to get the maximum projection
     return dotProduct(this->center, axis, DIMENSIONS) + this->radius;
 }
+
+void BoundingSphere::render(glm::mat4 &view, glm::mat4 &projPersp) const {
+
+}

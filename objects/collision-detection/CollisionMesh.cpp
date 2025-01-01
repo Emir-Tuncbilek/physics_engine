@@ -25,7 +25,7 @@ std::unique_ptr<CollisionMesh> CollisionMesh::clone() const {
     return std::move(cm);
 }
 
-void CollisionMesh::translate(const std::vector<std::vector<float>>& translationMatrix) {
+void CollisionMesh::translate(const std::vector<float>& translationMatrix) {
     for (auto && volume : this->volumes) volume->translate(translationMatrix);
 }
 
@@ -33,8 +33,18 @@ void CollisionMesh::rotate(const std::vector<std::vector<float>>& rotationMatrix
     for (auto && volume : this->volumes) volume->setRotationMatrix(rotationMatrix);
 }
 
-void CollisionMesh::render() {
-    /* Todo: implement */
+void CollisionMesh::rotate(const std::vector<float> &angleDiff) {
+    assert(angleDiff.size() == DIMENSIONS);
+    std::vector<std::vector<float>> rotMatrix = {
+            { 1.0f, 0.0f, 0.0f },
+            { 0.0f, 1.0f, 0.0f },
+            { 0.0f, 0.0f, 1.0f }
+    };
+    this->rotate(rotMatrix);
+}
+
+void CollisionMesh::render(glm::mat4 &view, glm::mat4 &projPersp) {
+    for (auto && volume : this->volumes) volume->render(view, projPersp);
 }
 
 void CollisionMesh::selfFit() {

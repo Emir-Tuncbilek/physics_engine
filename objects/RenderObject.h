@@ -21,16 +21,16 @@
 #include "../graphics/models.h"
 #include "../graphics/textures.h"
 #include "../graphics/shaderProgram.h"
+#include "../graphics/sceneContext.h"
 #include "../physics/physicsState.h"
 #include "./collision-detection/CollisionMesh.h"
-#include "./collision-detection/BoundingVolume.h"
 
 #define OFFSET 8
 
 class RenderObject {
 protected:
     std::unique_ptr<CollisionMesh> collisionMesh;
-
+    std::shared_ptr<SceneContext> context;
 public:
     RenderObject();
 
@@ -44,11 +44,16 @@ public:
     void addBoundingVolume(const std::shared_ptr<BoundingVolume>& volume);
     bool isIntersecting(const std::shared_ptr<RenderObject>& o) const;
     virtual void init();
-    virtual std::vector<std::shared_ptr<RenderObject>> getObjects() const = 0;
     virtual void translateCollisionMeshToState();
     virtual void rotateCollisionMeshToState();
-    virtual void render(glm::mat4 &view, glm::mat4 &projPersp, const float& delta_t) = 0;
+    virtual void setContextFromScene(const std::shared_ptr<SceneContext>& sceneContext);
+    virtual void renderCollisionMesh(glm::mat4 &view, glm::mat4 &projPersp, const PhysicsState& oldState);
+
     virtual std::vector<std::shared_ptr<PhysicsState>> getPhysicState();
+
+    virtual std::vector<std::shared_ptr<RenderObject>> getObjects() const = 0;
+    virtual std::shared_ptr<RenderObject> clone() const = 0;
+    virtual void render(glm::mat4 &view, glm::mat4 &projPersp, const float& delta_t) = 0;
 
 public:
     std::vector<std::pair<std::string, GLenum>> shaderPaths;

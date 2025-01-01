@@ -11,9 +11,15 @@
 #include <chrono>
 #include <vector>
 #include <memory>
+#include <math.h>
 
 #include "./Resources.h"
 #include "../physics/forces.h"
+#include "./sceneContext.h"
+
+#include "./public-libs/imgui/imgui.h"
+
+#define FPS_FRAME_UPDATE_RATE 50
 
 class Scene {
 public:
@@ -21,6 +27,8 @@ public:
     virtual ~Scene();
 
     void addForces(const std::shared_ptr<Force>& f);
+
+    void drawMenu();
     void render(glm::mat4& view, glm::mat4& projPersp);
 
     std::vector<std::shared_ptr<Force>> forces;
@@ -28,7 +36,14 @@ public:
 protected:
     Resources& m_res;
 private:
-    std::clock_t startTime;
+    using Clock = std::chrono::high_resolution_clock;
+    using TimePoint = std::chrono::time_point<Clock>;
+
+    u_int8_t tick;
+    float fps;
+    int lastFps;
+    TimePoint startTime;
+    std::shared_ptr<SceneContext> context;
     void applyCollisionPhysics();
 };
 

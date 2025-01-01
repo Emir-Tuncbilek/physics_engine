@@ -22,20 +22,26 @@ public:
             _maxYDistance(maxYDistance),
             _airSpeed(airSpeed) {}
 
+    CloudParticuleObject(const CloudParticuleObject& other);
+
     ~CloudParticuleObject() = default;
 
     void init() override;
 
     std::vector<std::shared_ptr<RenderObject>> getObjects() const override;
 
+    void setContextFromScene(const std::shared_ptr<SceneContext> &sceneContext) override;
+
     void render(glm::mat4 &view, glm::mat4 &projPersp, const float& delta_t) override;
 
     std::vector<std::shared_ptr<PhysicsState>> getPhysicState() override;
 
+    std::shared_ptr<RenderObject> clone() const override;
+
 private:
     std::string particuleObjectPath;
     size_t _numParticules;
-    std::vector<std::shared_ptr<ParticuleObject>> particules;
+    std::vector<std::shared_ptr<RenderObject>> particules;
     float _maxXDistance;
     float _maxYDistance;
     float _airSpeed;

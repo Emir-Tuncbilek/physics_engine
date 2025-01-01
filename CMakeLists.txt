@@ -54,7 +54,14 @@ add_executable(physics_engine
         objects/FloorObject.cpp objects/FloorObject.h
         objects/F1Object.cpp objects/F1Object.h
         objects/ParticuleObject.cpp objects/ParticuleObject.h
-        objects/CloudParticuleObject.cpp objects/CloudParticuleObject.h objects/collision-detection/BoundingVolume.cpp objects/collision-detection/BoundingVolume.h objects/collision-detection/BoundingSphere.cpp objects/collision-detection/BoundingSphere.h objects/collision-detection/BoundingBox.cpp objects/collision-detection/BoundingBox.h objects/collision-detection/CollisionMesh.cpp objects/collision-detection/CollisionMesh.h objects/collision-detection/SAT_collisions.cpp objects/collision-detection/SAT_collisions.h)
+        objects/CloudParticuleObject.cpp objects/CloudParticuleObject.h
+        objects/collision-detection/BoundingVolume.cpp objects/collision-detection/BoundingVolume.h
+        objects/collision-detection/BoundingSphere.cpp objects/collision-detection/BoundingSphere.h
+        objects/collision-detection/BoundingBox.cpp objects/collision-detection/BoundingBox.h
+        objects/collision-detection/CollisionMesh.cpp objects/collision-detection/CollisionMesh.h
+        objects/collision-detection/SAT_collisions.cpp objects/collision-detection/SAT_collisions.h
+        graphics/sceneContext.h
+        objects/CollisionObject.cpp objects/CollisionObject.h)
 
 # Link the OpenGL, GLEW, and context libraries
 target_link_libraries(physics_engine
@@ -62,6 +69,25 @@ target_link_libraries(physics_engine
         ${EXTRA_LIBS}
         -lfreeimage
         )
+
+# Include Dear ImGui
+set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/graphics/public-libs/imgui)
+
+include_directories(${IMGUI_DIR})
+include_directories(${IMGUI_DIR}/backends)
+
+set(IMGUI_SOURCES
+        ${IMGUI_DIR}/imgui.cpp
+        ${IMGUI_DIR}/imgui_demo.cpp
+        ${IMGUI_DIR}/imgui_draw.cpp
+        ${IMGUI_DIR}/imgui_tables.cpp
+        ${IMGUI_DIR}/imgui_widgets.cpp
+        ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
+        ${IMGUI_DIR}/backends/imgui_impl_sdl2.cpp
+        )
+
+# Add the ImGui sources to the executable
+target_sources(physics_engine PRIVATE ${IMGUI_SOURCES})
 
 # Link necessary frameworks on macOS
 if(APPLE)

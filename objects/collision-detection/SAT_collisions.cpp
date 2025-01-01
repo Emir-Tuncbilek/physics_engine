@@ -36,6 +36,14 @@ float quakeIIIFastInverseSqrt(const float& x) {
     return y;
 }
 
+void normalize(std::vector<float>& vec) {
+    assert(!vec.empty());
+    float magnitudeSquared = 0.0f;
+    for (auto && param : vec) magnitudeSquared += param * param;
+    const float invSqrt = quakeIIIFastInverseSqrt(magnitudeSquared);
+    for (auto && param : vec) param *= invSqrt;
+}
+
 void multiplyMatrices(const std::vector<std::vector<float>>& m1, const std::vector<std::vector<float>>& m2, std::vector<std::vector<float>>& result) {
     for (size_t i = 0; i < m1.size(); i ++) {
         for (size_t j = 0; j < m2[0].size(); j ++) {

@@ -3,27 +3,43 @@
 //
 
 #include "physicsState.h"
-
-PhysicsState::PhysicsState(const float& delta_t,
-                           const float& mass,
-                           const float& momentOfInertia,
-                           const float *position,
-                           const float *orientation,
-                           const float *velocity,
-                           const float *angularVelocity) :
-    delta_t(delta_t), mass(mass), momentOfInertia(momentOfInertia), maximumRadius(0.0f)
+PhysicsState::PhysicsState(const float &delta_t,
+                           const float &mass,
+                           const float &momentOfInertia,
+                           const std::vector<float>& position,
+                           const std::vector<float>& orientation,
+                           const std::vector<float>& velocity,
+                           const std::vector<float>& angularVelocity) :
+        delta_t(delta_t), mass(mass), momentOfInertia(momentOfInertia),
+        maximumRadius(0.0f), position(position), orientation(orientation),
+        velocity(velocity), angularVelocity(angularVelocity)
 {
-    for (int i = 0; i < DIMENSIONS; i ++) {
-        if (position + i != nullptr)        this->position[i]        = *(position + i);
-        if (orientation + i != nullptr)     this->orientation[i]     = *(orientation + i);
-        if (velocity + i != nullptr)        this->velocity[i]        = *(velocity + i);
-        if (angularVelocity + i != nullptr) this->angularVelocity[i] = *(position + i);
+    this->acceleration = { ZERO_VECTOR };
+    this->torque = { ZERO_VECTOR };
+    this->angularAcceleration = { ZERO_VECTOR };
+}
+
+
+std::pair<std::vector<float>, std::vector<float>> PhysicsState::getDifferenceInStates(const PhysicsState &p1, const PhysicsState &p2) {
+    std::vector<float> deltaPosition, deltaOrientation;
+    deltaPosition.reserve(DIMENSIONS);
+    deltaOrientation.reserve(DIMENSIONS);
+    for (uint8_t i = 0; i < DIMENSIONS; i ++) {
+        deltaPosition.push_back(p2.position[i] - p1.position[i]);
+        deltaOrientation.push_back(p2.orientation[i] - p1.orientation[i]);
     }
-    // system is initially at rest
-    const float zeros[3] = { ZERO_VECTOR };
-    std::copy(zeros, zeros + DIMENSIONS, this->acceleration);
-    std::copy(zeros, zeros + DIMENSIONS, this->angularAcceleration);
-    std::copy(zeros, zeros + DIMENSIONS, this->torque);
+    return { deltaPosition, deltaOrientation };
+
+}
+
+void PhysicsState::setNewPos(const std::vector<float> &newPos) {
+    assert(newPos.size() == DIMENSIONS);
+    for (uint8_t i = 0; i < DIMENSIONS; i ++) this->position[i] = newPos[i];
+}
+
+void PhysicsState::setNewOrientation(const std::vector<float> &newOrientation) {
+    assert(newOrientation.size() == DIMENSIONS);
+    for (uint8_t i = 0; i < DIMENSIONS; i ++) this->orientation[i] = newOrientation[i];
 }
 
 void PhysicsState::computeMaximumDistance(std::vector<float> &vertices, int offset) {
@@ -49,7 +65,9 @@ void PhysicsState::computeMaximumDistance(std::vector<float> &vertices, int offs
     this->maximumRadius = sqrt(furthestDistanceSquared);
 }
 
-void PhysicsState::changeState(const float *_acceleration, const float *_torque, const float *_angularAcceleration) {
+void PhysicsState::changeState(const std::vector<float>& _acceleration,
+                               const std::vector<float>& _torque,
+                               const std::vector<float>& _angularAcceleration) {
     for (int i = 0; i < DIMENSIONS; i ++ ) {
         this->acceleration[i]        += _acceleration[i];
         this->angularAcceleration[i] += _angularAcceleration[i];
@@ -88,7 +106,7 @@ void PhysicsState::nextFrame() {
 
 void PhysicsState::applyCollision(std::shared_ptr<PhysicsState> &p)  {
     // Calculate the normal vector between the two centers of mass
-    float normalVec[DIMENSIONS] = {
+    std::vector<float> normalVec = {
             p->getPositionOfCM()[0] - this->getPositionOfCM()[0],
             p->getPositionOfCM()[1] - this->getPositionOfCM()[1],
             p->getPositionOfCM()[2] - this->getPositionOfCM()[2]
@@ -99,24 +117,34 @@ void PhysicsState::applyCollision(std::shared_ptr<PhysicsState> &p)  {
     if (length == 0.0f) return; // Avoid division by zero
     for (float& i : normalVec) i /= length;
 
+    // Compute relative velocity along the normal
+    float relativeVelocity = 0.0f;
+    for (int i = 0; i < DIMENSIONS; i++) {
+        relativeVelocity += (p->velocity[i] - this->velocity[i]) * normalVec[i];
+    }
+
+    // Skip collision response if objects are moving apart
+    if (relativeVelocity > 0) return;
+
+
     // Compute normal and tangential components of velocity for this object
     float v1_dot_n = 0.0f;
     for (int i = 0; i < DIMENSIONS; i++) v1_dot_n += this->velocity[i] * normalVec[i];
 
-    float v1in[DIMENSIONS], v1it[DIMENSIONS];
+    std::vector<float> v1in, v1it;
     for (int i = 0; i < DIMENSIONS; i++) {
-        v1in[i] = v1_dot_n * normalVec[i];
-        v1it[i] = this->velocity[i] - v1in[i];
+        v1in.push_back(v1_dot_n * normalVec[i]);
+        v1it.push_back(this->velocity[i] - v1in[i]);
     }
 
     // Compute normal and tangential components of velocity for the other object
     float v2_dot_n = 0.0f;
     for (int i = 0; i < DIMENSIONS; i++) v2_dot_n += p->velocity[i] * normalVec[i];
 
-    float v2in[DIMENSIONS], v2it[DIMENSIONS];
+    std::vector<float> v2in, v2it;
     for (int i = 0; i < DIMENSIONS; i++) {
-        v2in[i] = v2_dot_n * normalVec[i];
-        v2it[i] = p->velocity[i] - v2in[i];
+        v2in.push_back(v2_dot_n * normalVec[i]);
+        v2it.push_back(p->velocity[i] - v2in[i]);
     }
 
     // check if "p" is an immovable object
@@ -144,10 +172,10 @@ void PhysicsState::applyCollision(std::shared_ptr<PhysicsState> &p)  {
     const float m2 = p->getMass();
     float totalMass = m1 + m2;
 
-    float v1f[DIMENSIONS], v2f[DIMENSIONS];
+    std::vector<float> v1f, v2f;
     for (int i = 0; i < DIMENSIONS; i++) {
-        v1f[i] = (m1 - m2) * v1in[i] / totalMass + (2 * m2 * v2in[i]) / totalMass;
-        v2f[i] = (m2 - m1) * v2in[i] / totalMass + (2 * m1 * v1in[i]) / totalMass;
+        v1f.push_back((m1 - m2) * v1in[i] / totalMass + (2 * m2 * v2in[i]) / totalMass);
+        v2f.push_back((m2 - m1) * v2in[i] / totalMass + (2 * m1 * v1in[i]) / totalMass);
     }
 
     // Combine final velocities (normal + tangential components)

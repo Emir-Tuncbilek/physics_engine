@@ -60,18 +60,31 @@ bool Window::init() {
     const int VSYNC = 1; // 1 on, 0 off, -1 adaptive
     SDL_GL_SetSwapInterval(VSYNC);
 
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    ImGui::StyleColorsDark();
+    // Setup Platform/Renderer backends
+    ImGui_ImplSDL2_InitForOpenGL(m_window, m_context);
+    ImGui_ImplOpenGL3_Init();
+
     pollEvent();
 
     return true;
 }
 
 void Window::swap() {
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     SDL_GL_SwapWindow(m_window);
 }
 
 void Window::pollEvent() {
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
+        ImGui_ImplSDL2_ProcessEvent(&e);
         switch (e.type)
         {
             case SDL_QUIT:
@@ -109,6 +122,10 @@ void Window::pollEvent() {
                 break;
         }
     }
+    // Start the Dear ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplSDL2_NewFrame();
+    ImGui::NewFrame();
 }
 
 void Window::getMouseMotion(int& x, int& y) {

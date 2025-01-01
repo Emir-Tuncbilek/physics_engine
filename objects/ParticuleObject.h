@@ -13,11 +13,13 @@ public:
     explicit ParticuleObject(const std::string& path, const float& xOffset, const float& yOffset) :
             RenderObject(path), XOffset(xOffset), YOffset(yOffset), speed(glm::vec3(0.0f)) {}
 
+    ParticuleObject(const ParticuleObject& other) = default;
     ~ParticuleObject() = default;
 
     void init() override;
     std::vector<std::shared_ptr<RenderObject>> getObjects() const override;
     void render(glm::mat4 &view, glm::mat4 &projPersp, const float& delta_t) override;
+    std::shared_ptr<RenderObject> clone() const override;
 
 public:
     glm::vec3 speed;

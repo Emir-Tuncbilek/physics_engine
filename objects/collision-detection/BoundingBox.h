@@ -16,6 +16,8 @@
 
 #define NUM_VERTICES 8
 #define NUM_NORMALS 6
+#define BOX_OBJECT_FILE_PATH "../3DObjects/cube.obj"
+
 
 class BoundingBox : public BoundingVolume {
 private:
@@ -33,6 +35,7 @@ public:
     bool testNormals(std::shared_ptr<BoundingVolume> boundingVolume) override;
     float getMax(const std::vector<float>& axis) const override;
     float getMin(const std::vector<float>& axis) const override;
+    void render(glm::mat4 &view, glm::mat4 &projPersp) const override;
 
 private:
     float getPositionOf(const std::vector<float>& axis, const std::function<bool(float, float)>& comparator) const;

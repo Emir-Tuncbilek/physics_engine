@@ -23,6 +23,7 @@ public:
     bool testNormals(std::shared_ptr<BoundingVolume> boundingVolume) override;
     float getMax(const std::vector<float>& axis) const override;
     float getMin(const std::vector<float>& axis) const override;
+    void render(glm::mat4 &view, glm::mat4 &projPersp) const override;
 };
 
 

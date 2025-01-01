@@ -5,7 +5,13 @@
 #include "scene.h"
 
 Scene::Scene(Resources &resources) : m_res(resources) {
-    this->startTime = std::clock();
+    this->startTime = Clock::now();
+    this->tick = 0;
+    this->fps  = 0.0f;
+    this->lastFps = 0;
+    this->context = std::make_shared<SceneContext>();
+    this->context->renderCollisionMesh = false;
+    for (auto && cluster : this->m_res.objects) cluster->setContextFromScene(this->context);
 }
 
 Scene::~Scene() = default;
@@ -14,10 +20,29 @@ void Scene::addForces(const std::shared_ptr<Force> &f) {
     this->forces.push_back(f);
 }
 
+void Scene::drawMenu() {
+    ImGui::Begin("Menu");
+    ImGui::Checkbox("Display Collision Mesh", (bool *) &this->context->renderCollisionMesh);
+    // if (this->context->renderCollisionMesh) std::cout << "I should be rendered!!!\n";
+    ImGui::Text("FPS: %d Hz", this->tick >= FPS_FRAME_UPDATE_RATE ? (int) round(this->fps) : this->lastFps);  // Display the FPS value
+
+    if (this->tick >= FPS_FRAME_UPDATE_RATE) {
+        this->tick = 0;
+        this->lastFps = (int) round(this->fps);
+    }
+
+    ImGui::End();
+}
+
 void Scene::render(glm::mat4 &view, glm::mat4 &projPersp) {
-    auto endTime = std::clock();
-    float delta_t = (float)(endTime - this->startTime) / CLOCKS_PER_SEC;
+
+    auto endTime = Clock::now();
+    float delta_t = std::chrono::duration<float>(endTime - this->startTime).count();
+    this->fps = 1.0f / delta_t;
     this->startTime = endTime;
+
+    this->drawMenu();
+
     for (int i = 0; i < this->m_res.objects.size(); i ++) {
         for (int j = 0; j < this->forces.size(); j ++ ) {
             std::vector<std::shared_ptr<PhysicsState>> states = this->m_res.objects[i]->getPhysicState();
@@ -27,7 +52,9 @@ void Scene::render(glm::mat4 &view, glm::mat4 &projPersp) {
         this->m_res.objects[i]->render(view, projPersp, delta_t);
     }
     this->applyCollisionPhysics();
+    this->tick ++;
 }
+
 
 void Scene::applyCollisionPhysics() {
     for (int i = 0; i < this->m_res.objects.size(); i ++) {

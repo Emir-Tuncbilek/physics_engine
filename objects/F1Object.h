@@ -12,11 +12,14 @@ class F1Object : public RenderObject {
 public:
     explicit F1Object(const std::string& path) : RenderObject(path) {}
 
+    F1Object(const F1Object& other) = default;
+
     ~F1Object() = default;
 
     void init() override;
     std::vector<std::shared_ptr<RenderObject>> getObjects() const override;
     void render(glm::mat4 &view, glm::mat4 &projPersp, const float& delta_t) override;
+    std::shared_ptr<RenderObject> clone() const override;
 };
 
 

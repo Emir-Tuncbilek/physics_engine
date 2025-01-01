@@ -78,7 +78,7 @@ int main() {
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
-    const float force[3] = { 0.0f, 0.0f, -GRAVITY_ACCELERATION_RATE };      // Gravity is only applied vertically and towards the bottom
+    const std::vector<float> force = { 0.0f, 0.0f, -GRAVITY_ACCELERATION_RATE };      // Gravity is only applied vertically and towards the bottom
     scene.addForces(std::make_shared<ForceField>(force));
 
     while (isRunning) {

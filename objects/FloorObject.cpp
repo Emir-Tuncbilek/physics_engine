@@ -6,13 +6,13 @@
 
 void FloorObject::init() {
     RenderObject::init();
-    float zeros[3] = { ZERO_VECTOR };
-    float position[3] = { 0.0f, 0.0f, -3.0f };
+    std::vector<float> zeros = { ZERO_VECTOR };
+    std::vector<float> position = { 0.0f, 0.0f, -3.0f };
     this->physics = std::make_shared<PhysicsState>(0.0f, std::numeric_limits<float>::infinity(), 0.0f, position, zeros, zeros, zeros);
     this->physics->computeMaximumDistance(this->model3D->vertexData, 3);
 
     // setup the bounding boxes for collision detection
-    float width  = this->physics->maximumRadius * 0.707f;   // 0.707 is about sqrt(2)/2 which is sin(45˚)
+    float width  = this->physics->maximumRadius * 1.0f;   // 0.707 is about sqrt(2)/2 which is sin(45˚)
     float height = width, depth = width;                    // Suppose that it's in fact a cube
     std::vector<float> pos;
     pos.reserve(DIMENSIONS);
@@ -27,18 +27,26 @@ std::vector<std::shared_ptr<RenderObject>> FloorObject::getObjects() const {
 }
 
 void FloorObject::render(glm::mat4 &view, glm::mat4 &projPersp, const float &delta_t) {
+    const PhysicsState oldState = *this->physics;
     this->physics->resetAccelerations();    // no acceleration
     auto mvp = projPersp * view;
-    glm::vec3 correctedPosition =
-            glm::vec3(this->physics->getPositionOfCM()[0],
-                      this->physics->getPositionOfCM()[2],
-                      -this->physics->getPositionOfCM()[1]
-            ); // Swap Y and Z, negate Z for OpenGL
-    mvp = glm::translate(mvp, correctedPosition);
+    if (!this->context->renderCollisionMesh) {
+        glm::vec3 correctedPosition =
+                glm::vec3(this->physics->getPositionOfCM()[0],
+                          this->physics->getPositionOfCM()[2],
+                          -this->physics->getPositionOfCM()[1]
+                ); // Swap Y and Z, negate Z for OpenGL
+        mvp = glm::translate(mvp, correctedPosition);
 
-    this->modelShaderProgram->use();
-    glUniformMatrix4fv(this->mvpModelLocation, 1, GL_FALSE, &mvp[0][0]);
-    if (this->modelTexture)
-        this->modelTexture->use();
-    this->model3D->draw();
+        this->modelShaderProgram->use();
+        glUniformMatrix4fv(this->mvpModelLocation, 1, GL_FALSE, &mvp[0][0]);
+        if (this->modelTexture)
+            this->modelTexture->use();
+        this->model3D->draw();
+    }
+    this->renderCollisionMesh(view, projPersp, oldState);
+}
+
+std::shared_ptr<RenderObject> FloorObject::clone() const {
+    return std::make_shared<FloorObject>(*this);
 }

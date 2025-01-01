@@ -15,39 +15,50 @@
 #include <ostream>
 #include <cmath>
 #include <memory>
+#include <assert.h>
 
 class PhysicsState {
 private:
     float delta_t;
     float mass;
     float momentOfInertia;
-    float position[3];              // position of the CM
-    float velocity[3];              // velocity of the CM
-    float acceleration[3];          // acceleration of the CM
-    float torque[3];
-    float orientation[3];
-    float angularVelocity[3];
-    float angularAcceleration[3];
+    std::vector<float> position;              // position of the CM
+    std::vector<float> velocity;              // velocity of the CM
+    std::vector<float> acceleration;          // acceleration of the CM
+    std::vector<float> torque;
+    std::vector<float> orientation;
+    std::vector<float> angularVelocity;
+    std::vector<float> angularAcceleration;
 
 public:
 
     float maximumRadius;
 
-    PhysicsState(const float& delta_t,
-                 const float& mass,
-                 const float& momentOfInertia,
-                 const float position[3],
-                 const float orientation[3],
-                 const float velocity[3],
-                 const float angularVelocity[3]);
+    PhysicsState(const float &delta_t,
+                 const float &mass,
+                 const float &momentOfInertia,
+                 const std::vector<float>& position,
+                 const std::vector<float>& orientation,
+                 const std::vector<float>& velocity,
+                 const std::vector<float>& angularVelocity);
 
     ~PhysicsState() = default;
 
+    /*
+     * returns the position (first) and orientation (second)
+     */
+    static std::pair<std::vector<float>, std::vector<float>> getDifferenceInStates(const PhysicsState& p1, const PhysicsState& p2);
+
+
     void computeMaximumDistance(std::vector<float>& vertices, int offset);
 
-    void changeState(const float _acceleration[3],
-                     const float _torque[3],
-                     const float _angularAcceleration[3]);
+    void changeState(const std::vector<float>& _acceleration,
+                     const std::vector<float>& _torque,
+                     const std::vector<float>& _angularAcceleration);
+
+    void setNewPos(const std::vector<float>& newCenterPos);
+
+    void setNewOrientation(const std::vector<float>& newCenterPos);
 
     void resetAccelerations();
 
@@ -58,8 +69,8 @@ public:
     void updateTimeDelta(const float time) { this->delta_t = time; }
     float getMass() const { return this->mass; }
     float getMomentOfInertia() const { return this->momentOfInertia; }
-    float * getPositionOfCM() { return this->position; }
-    float * getOrientation() { return this->orientation; }
+    std::vector<float> getPositionOfCM() const { return this->position; }
+    std::vector<float> getOrientation() const { return this->orientation; }
 
     friend std::ostream& operator << (std::ostream& o, const PhysicsState& physicsState);
 };

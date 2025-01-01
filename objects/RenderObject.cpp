@@ -34,6 +34,22 @@ RenderObject::RenderObject(const std::string& modelPath) {
     this->collisionMesh = std::make_unique<CollisionMesh>();
 }
 
+void RenderObject::setContextFromScene(const std::shared_ptr<SceneContext>& sceneContext) {
+    this->context = sceneContext;
+}
+
+void RenderObject::renderCollisionMesh(glm::mat4 &view, glm::mat4 &projPersp, const PhysicsState& oldState) {
+    if (this->context->renderCollisionMesh) {
+        auto differences = PhysicsState::getDifferenceInStates(oldState, *this->physics);
+        const std::vector<float> position = {
+                this->physics->getPositionOfCM()[0], this->physics->getPositionOfCM()[1],this->physics->getPositionOfCM()[2],
+        };
+        this->collisionMesh->translate(position);
+        this->collisionMesh->rotate(differences.second);
+        this->collisionMesh->render(view, projPersp);
+    }
+}
+
 RenderObject::RenderObject(const RenderObject& other) {
     this->model3D = other.model3D;
     this->modelShaderProgram = other.modelShaderProgram;
@@ -60,13 +76,12 @@ void RenderObject::init() {
 }
 
 void RenderObject::translateCollisionMeshToState() {
-    const std::vector<std::vector<float>> translationMatrix = {
-            { 1.0f, 0.0f, 0.0f, this->physics->getPositionOfCM()[0]},
-            { 0.0f, 1.0f, 0.0f, this->physics->getPositionOfCM()[1]},
-            { 0.0f, 0.0f, 1.0f, this->physics->getPositionOfCM()[2]},
-            { 0.0f, 0.0f, 0.0f,              1.0f                  }
+    const std::vector<float> translation= {
+            this->physics->getPositionOfCM()[0],
+            this->physics->getPositionOfCM()[1],
+            this->physics->getPositionOfCM()[2]
     };
-    this->collisionMesh->translate(translationMatrix);
+    this->collisionMesh->translate(translation);
 }
 
 void RenderObject::rotateCollisionMeshToState() {
@@ -88,24 +103,9 @@ bool RenderObject::isIntersecting(const std::shared_ptr<RenderObject> &o) const 
 
 void RenderObject::computeCollisions(std::shared_ptr<RenderObject> &o) {
     // data available from this->model3D->m_shape.vertexData;
-
     for (auto && thisObject : this->getObjects()) {
-        float * CM1_ptr = thisObject->physics->getPositionOfCM();
-        float CM1[3];
-        std::copy(CM1_ptr, CM1_ptr + DIMENSIONS, CM1);
-
         for (auto && object : o->getObjects()) {
-            // preliminary check to see if an object is potentially in collision
-            float * CM2_ptr = object->physics->getPositionOfCM();
-            float CM2[3];
-            std::copy(CM2_ptr, CM2_ptr + DIMENSIONS, CM2);
-            float distanceBetweenCMsSquared = (CM2[0] - CM1[0]) * (CM2[0] - CM1[0]) +
-                                              (CM2[1] - CM1[1]) * (CM2[1] - CM1[1]) +
-                                              (CM2[2] - CM1[2]) * (CM2[2] - CM1[2]);
-            float minPhysicalDistanceSquared = (thisObject->physics->maximumRadius + object->physics->maximumRadius);
-            if (distanceBetweenCMsSquared <= minPhysicalDistanceSquared && thisObject->isIntersecting(object)) {
-                thisObject->physics->applyCollision(object->physics);
-            }
+            if (thisObject->isIntersecting(object)) thisObject->physics->applyCollision(object->physics);
         }
     }
 }

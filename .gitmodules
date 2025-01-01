@@ -1,3 +1,6 @@
 [submodule "external/googletest"]
 	path = external/googletest
 	url = https://github.com/google/googletest.git
+[submodule "graphics/public-libs/ImGUI/imgui"]
+	path = graphics/public-libs/ImGUI/imgui
+	url = https://github.com/ocornut/imgui.git
