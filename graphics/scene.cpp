@@ -37,7 +37,7 @@ void Scene::drawMenu() {
 void Scene::render(glm::mat4 &view, glm::mat4 &projPersp) {
 
     auto endTime = Clock::now();
-    float delta_t = std::chrono::duration<float>(endTime - this->startTime).count();
+    float delta_t = std::chrono::duration<float>(endTime - this->startTime).count() * TIME_NORMALIZING_FACTOR;
     this->fps = 1.0f / delta_t;
     this->startTime = endTime;
 

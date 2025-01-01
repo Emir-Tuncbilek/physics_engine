@@ -12,19 +12,10 @@ add_subdirectory(tests)
 
 # Manually add GLEW paths if find_package fails
 find_package(OpenGL REQUIRED)
+find_package(SDL2 REQUIRED)
+include_directories(${SDL2_INCLUDE_DIRS})
+list(APPEND EXTRA_LIBS ${SDL2_LIBRARIES})
 
-# Find and include SDL2 or GLFW based on your choice
-set(CONTEXT "sdl2")  # Change to "glfw3" if you prefer GLFW
-
-if(${CONTEXT} STREQUAL "sdl2")
-    find_package(SDL2 REQUIRED)
-    include_directories(${SDL2_INCLUDE_DIRS})
-    list(APPEND EXTRA_LIBS ${SDL2_LIBRARIES})
-elseif(${CONTEXT} STREQUAL "glfw3")
-    find_package(GLFW3 REQUIRED)
-    include_directories(${GLFW_INCLUDE_DIRS})
-    list(APPEND EXTRA_LIBS ${GLFW_LIBRARIES})
-endif()
 
 # Manually specify the GLEW paths (adjust these if your paths differ)
 include_directories(/opt/homebrew/include)
@@ -63,15 +54,8 @@ add_executable(physics_engine
         graphics/sceneContext.h
         objects/CollisionObject.cpp objects/CollisionObject.h)
 
-# Link the OpenGL, GLEW, and context libraries
-target_link_libraries(physics_engine
-        ${OPENGL_LIBRARIES}
-        ${EXTRA_LIBS}
-        -lfreeimage
-        )
-
 # Include Dear ImGui
-set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/graphics/public-libs/imgui)
+set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/external/imgui)
 
 include_directories(${IMGUI_DIR})
 include_directories(${IMGUI_DIR}/backends)
@@ -89,11 +73,16 @@ set(IMGUI_SOURCES
 # Add the ImGui sources to the executable
 target_sources(physics_engine PRIVATE ${IMGUI_SOURCES})
 
+
+# Link the OpenGL, GLEW, and context libraries
+target_link_libraries(physics_engine
+        ${OPENGL_LIBRARIES}
+        ${EXTRA_LIBS}
+        -lfreeimage
+        )
+
 # Link necessary frameworks on macOS
 if(APPLE)
     target_link_libraries(physics_engine "-framework OpenGL")
-    if(${CONTEXT} STREQUAL "glfw3")
-        target_link_libraries(physics_engine "-lobjc -framework Foundation -framework Cocoa")
-    endif()
 endif()
 

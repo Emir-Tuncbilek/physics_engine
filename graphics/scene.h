@@ -17,9 +17,10 @@
 #include "../physics/forces.h"
 #include "./sceneContext.h"
 
-#include "./public-libs/imgui/imgui.h"
+#include "../external/imgui/imgui.h"
 
 #define FPS_FRAME_UPDATE_RATE 50
+#define TIME_NORMALIZING_FACTOR 0.5f
 
 class Scene {
 public:
