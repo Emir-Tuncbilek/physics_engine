@@ -64,3 +64,7 @@ void BoundingVolume::setRotationMatrix(const std::vector<std::vector<float>>& ro
     for (uint8_t i = 0; i < DIMENSIONS; i ++) this->orientation[i] += angleDelta[i];
     this->renderObject->physics->setNewOrientation(this->orientation);
 }
+
+void BoundingVolume::resize(const float &x, const float &y, const float &z) {
+    this->renderObject->resize(x, y, z);
+}

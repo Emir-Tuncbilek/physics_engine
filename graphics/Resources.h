@@ -17,6 +17,7 @@ public:
     Resources();
     ~Resources();
     void addObject(const std::shared_ptr<RenderObject>& object);
+    void reset();
 };
 
 #endif //PHYSICS_ENGINE_RESOURCES_H

@@ -12,7 +12,7 @@ void FloorObject::init() {
     this->physics->computeMaximumDistance(this->model3D->vertexData, 3);
 
     // setup the bounding boxes for collision detection
-    float width  = this->physics->maximumRadius * 1.0f;   // 0.707 is about sqrt(2)/2 which is sin(45˚)
+    float width  = this->physics->maximumRadius;
     float height = width, depth = width;                    // Suppose that it's in fact a cube
     std::vector<float> pos;
     pos.reserve(DIMENSIONS);

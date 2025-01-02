@@ -28,6 +28,7 @@ public:
     void translate(const std::vector<float>& offset);
     void rotate(const std::vector<std::vector<float>>& rotationMatrix);
     void rotate(const std::vector<float>& angleDiff);
+    void resize(const float& x, const float& y, const float& z);
     /* cool functions */
     void render(glm::mat4 &view, glm::mat4 &projPersp);
     void selfFit();

@@ -12,9 +12,12 @@ Scene::Scene(Resources &resources) : m_res(resources) {
     this->context = std::make_shared<SceneContext>();
     this->context->renderCollisionMesh = false;
     for (auto && cluster : this->m_res.objects) cluster->setContextFromScene(this->context);
+    this->state = SceneState();
 }
 
 Scene::~Scene() = default;
+
+
 
 void Scene::addForces(const std::shared_ptr<Force> &f) {
     this->forces.push_back(f);
@@ -23,8 +26,15 @@ void Scene::addForces(const std::shared_ptr<Force> &f) {
 void Scene::drawMenu() {
     ImGui::Begin("Menu");
     ImGui::Checkbox("Display Collision Mesh", (bool *) &this->context->renderCollisionMesh);
-    // if (this->context->renderCollisionMesh) std::cout << "I should be rendered!!!\n";
-    ImGui::Text("FPS: %d Hz", this->tick >= FPS_FRAME_UPDATE_RATE ? (int) round(this->fps) : this->lastFps);  // Display the FPS value
+    ImGui::Text("Time Elapsed: %.3f secs", this->state.timeElapsed);
+
+    this->handlePausePlay();
+    ImGui::Text("Speed: %.2fx", this->state.timeMultiplier);
+    this->handleTimeSpeed();
+
+    this->resetToOriginalState();
+
+    ImGui::Text("FPS: %d Hz", this->tick >= FPS_FRAME_UPDATE_RATE ? (int) round(this->fps) : this->lastFps);
 
     if (this->tick >= FPS_FRAME_UPDATE_RATE) {
         this->tick = 0;
@@ -37,8 +47,11 @@ void Scene::drawMenu() {
 void Scene::render(glm::mat4 &view, glm::mat4 &projPersp) {
 
     auto endTime = Clock::now();
-    float delta_t = std::chrono::duration<float>(endTime - this->startTime).count() * TIME_NORMALIZING_FACTOR;
+    float delta_t = std::chrono::duration<float>(endTime - this->startTime).count();
     this->fps = 1.0f / delta_t;
+    delta_t *= this->state.pause ? 0.0f : this->state.timeMultiplier;
+    this->state.timeElapsed += (double) delta_t;
+    delta_t *= TIME_NORMALIZING_FACTOR;
     this->startTime = endTime;
 
     this->drawMenu();

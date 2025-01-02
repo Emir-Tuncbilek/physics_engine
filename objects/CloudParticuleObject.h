@@ -28,6 +28,8 @@ public:
 
     void init() override;
 
+    void reset() override;
+
     std::vector<std::shared_ptr<RenderObject>> getObjects() const override;
 
     void setContextFromScene(const std::shared_ptr<SceneContext> &sceneContext) override;

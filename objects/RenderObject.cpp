@@ -75,6 +75,14 @@ void RenderObject::init() {
     }
 }
 
+void RenderObject::reset() {
+    this->physics->reset();
+    this->translateCollisionMeshToState();
+    this->rotateCollisionMeshToState();
+}
+
+void RenderObject::resize(const float &x, const float &y, const float &z) { /* Do Nothing */ }
+
 void RenderObject::translateCollisionMeshToState() {
     const std::vector<float> translation= {
             this->physics->getPositionOfCM()[0],

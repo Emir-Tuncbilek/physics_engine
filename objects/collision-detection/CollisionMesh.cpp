@@ -43,6 +43,10 @@ void CollisionMesh::rotate(const std::vector<float> &angleDiff) {
     this->rotate(rotMatrix);
 }
 
+void CollisionMesh::resize(const float &x, const float &y, const float &z) {
+    for (auto&& volume : this->volumes) volume->resize(x, y, z);
+}
+
 void CollisionMesh::render(glm::mat4 &view, glm::mat4 &projPersp) {
     for (auto && volume : this->volumes) volume->render(view, projPersp);
 }

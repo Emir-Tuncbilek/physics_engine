@@ -55,6 +55,10 @@ void CloudParticuleObject::init() {
     std::cout << "Loading: 100% complete!" << std::endl;
 }
 
+void CloudParticuleObject::reset() {
+    for (auto && particule : this->particules) particule->reset();
+}
+
 std::vector<std::shared_ptr<RenderObject>> CloudParticuleObject::getObjects() const {
     std::vector<std::shared_ptr<RenderObject>> objects;
     objects.reserve(this->_numParticules);

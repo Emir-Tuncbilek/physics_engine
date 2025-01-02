@@ -20,7 +20,7 @@
 #include "../external/imgui/imgui.h"
 
 #define FPS_FRAME_UPDATE_RATE 50
-#define TIME_NORMALIZING_FACTOR 0.5f
+#define TIME_NORMALIZING_FACTOR 1.0f
 
 class Scene {
 public:
@@ -34,6 +34,32 @@ public:
 
     std::vector<std::shared_ptr<Force>> forces;
 
+private:
+    void applyCollisionPhysics();
+    void handlePausePlay() {
+        if (this->state.pause && ImGui::Button("Play")) this->state.pause = false;
+        else if (!this->state.pause && ImGui::Button("Pause")) this->state.pause = true;
+    }
+    void handleTimeSpeed() {
+        if (ImGui::Button("0.25x")) this->state.timeMultiplier = 0.25f;
+        ImGui::SameLine();
+        if (ImGui::Button("0.5x")) this->state.timeMultiplier = 0.5f;
+        ImGui::SameLine();
+        if (ImGui::Button("1x")) this->state.timeMultiplier = 1.0f;
+        ImGui::SameLine();
+        if (ImGui::Button("2x")) this->state.timeMultiplier = 2.0f;
+        ImGui::SameLine();
+        if (ImGui::Button("4x")) this->state.timeMultiplier = 4.0f;
+    }
+
+    void resetToOriginalState() {
+        if (ImGui::Button("Reset Scene")) {
+            this->m_res.reset();
+            this->state.timeElapsed = 0.0f;
+            this->state.timeMultiplier = 1.0f;
+        }
+    }
+
 protected:
     Resources& m_res;
 private:
@@ -45,7 +71,13 @@ private:
     int lastFps;
     TimePoint startTime;
     std::shared_ptr<SceneContext> context;
-    void applyCollisionPhysics();
+    struct SceneState {
+        bool pause = true;
+        float timeMultiplier = 1.0f;    // 1X
+        double timeElapsed = 0.0f;
+    };
+
+    SceneState state;
 };
 
 #endif //PHYSICS_ENGINE_SCENE_H

@@ -30,6 +30,12 @@ private:
     std::vector<float> angularVelocity;
     std::vector<float> angularAcceleration;
 
+    // original settings
+    std::vector<float> o_position;
+    std::vector<float> o_velocity;
+    std::vector<float> o_orientation;
+    std::vector<float> o_angularVelocity;
+
 public:
 
     float maximumRadius;
@@ -43,6 +49,8 @@ public:
                  const std::vector<float>& angularVelocity);
 
     ~PhysicsState() = default;
+
+    void reset();
 
     /*
      * returns the position (first) and orientation (second)

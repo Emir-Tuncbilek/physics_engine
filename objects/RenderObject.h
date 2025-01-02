@@ -40,6 +40,8 @@ public:
 
     ~RenderObject() = default;
 
+    virtual void reset();
+    virtual void resize(const float &x, const float &y, const float &z);
     void computeCollisions(std::shared_ptr<RenderObject>& o);
     void addBoundingVolume(const std::shared_ptr<BoundingVolume>& volume);
     bool isIntersecting(const std::shared_ptr<RenderObject>& o) const;

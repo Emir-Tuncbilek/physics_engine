@@ -41,6 +41,7 @@ public:
     void applyRotationMatrix(const std::vector<float>& vec, std::vector<float>& result) const;
 
     void setRotationMatrix(const std::vector<std::vector<float>>& rotMatrix);
+    void resize(const float &x, const float &y, const float &z);
 
     virtual std::shared_ptr<BoundingVolume> clone() = 0;
     virtual bool isCollidingWith(std::shared_ptr<BoundingVolume> boundingVolume) = 0;

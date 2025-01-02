@@ -15,13 +15,14 @@ void ParticuleObject::init() {
     this->physics->maximumRadius *= 0.01f;   // because the model is scaled to 0.01
 
     // setup the bounding boxes for collision detection
-    float width  = this->physics->maximumRadius * 1.1f;   // 0.707 is about sqrt(2)/2 which is sin(45˚)
-    float height = width, depth = width;                    // Suppose that it's in fact a cube
+    float width  = this->physics->maximumRadius;
+    float height = width, depth = width;    // Suppose that it's in fact a cube
     std::vector<float> position;
     position.reserve(DIMENSIONS);
     for (int i = 0; i < DIMENSIONS; i ++) position.push_back(this->physics->getPositionOfCM()[i]);
-    this->addBoundingVolume(std::make_shared<BoundingBox>(position, width, depth, height));
-    // this->physics->maximumRadius *= 0.01f;   // because the model is scaled to 0.01
+    auto boundingBox = std::make_shared<BoundingBox>(position, width, depth, height);
+    boundingBox->resize(0.01f, 0.01f, 0.01f);
+    this->addBoundingVolume(boundingBox);
 
 }
 

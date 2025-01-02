@@ -17,9 +17,12 @@ public:
     ~CollisionObject() = default;
 
     std::vector<std::shared_ptr<RenderObject>> getObjects() const override;
+    void resize(const float& x, const float& y, const float& z) override;
     void init() override;
     void render(glm::mat4 &view, glm::mat4 &projPersp, const float& delta_t) override;
     std::shared_ptr<RenderObject> clone() const override;
+private:
+    float xScale, yScale, zScale;
 };
 
 

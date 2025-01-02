@@ -17,8 +17,18 @@ PhysicsState::PhysicsState(const float &delta_t,
     this->acceleration = { ZERO_VECTOR };
     this->torque = { ZERO_VECTOR };
     this->angularAcceleration = { ZERO_VECTOR };
+    this->o_position = this->position;
+    this->o_velocity = this->velocity;
+    this->o_orientation = this->orientation;
+    this->o_angularVelocity = this->angularVelocity;
 }
 
+void PhysicsState::reset() {
+    this->velocity = this->o_velocity;
+    this->position = this->o_position;
+    this->orientation = this->o_orientation;
+    this->angularVelocity = this->o_angularVelocity;
+}
 
 std::pair<std::vector<float>, std::vector<float>> PhysicsState::getDifferenceInStates(const PhysicsState &p1, const PhysicsState &p2) {
     std::vector<float> deltaPosition, deltaOrientation;

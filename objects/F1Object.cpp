@@ -13,8 +13,8 @@ void F1Object::init() {
     this->physics->computeMaximumDistance(this->model3D->vertexData, 3);
 
     // setup the bounding boxes for collision detection
-    float width  = this->physics->maximumRadius * 1.0f;   // 0.707 is about sqrt(2)/2 which is sin(45˚)
-    float height = width, depth = width;                    // Suppose that it's in fact a cube
+    float width  = this->physics->maximumRadius * 1.0f;
+    float height = width, depth = width;    // Suppose that it's in fact a cube
     std::vector<float> position;
     position.reserve(DIMENSIONS);
     for (int i = 0; i < DIMENSIONS; i ++) position.push_back(this->physics->getPositionOfCM()[i]);
