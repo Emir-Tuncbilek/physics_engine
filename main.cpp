@@ -46,13 +46,14 @@ int main() {
     std::cout << "Rendering..." << std::endl;
 
     Resources resources;
-
+    /*
     std::shared_ptr<F1Object> car = std::make_shared<F1Object>("../3DObjects/cube.obj");    // load a cube instead of the F1 object for faster rendering
     // std::unique_ptr<F1Object> car = std::make_unique<F1Object>("../3DObjects/F1_2026.obj");
     car->shaderPaths.emplace_back("../shaders/f1CarShader.vs.glsl", GL_VERTEX_SHADER);
     car->shaderPaths.emplace_back("../shaders/f1CarShader.fs.glsl", GL_FRAGMENT_SHADER);
     car->init();
     resources.addObject(car);
+     */
 
     std::shared_ptr<CloudParticuleObject> particuleCloud = std::make_shared<CloudParticuleObject>("../3DObjects/cube.obj", NUM_PARTICULES, CLOUD_WIDTH, CLOUD_HEIGHT, CLOUD_SPEED);
     particuleCloud->shaderPaths.emplace_back("../shaders/particule.vs.glsl", GL_VERTEX_SHADER);

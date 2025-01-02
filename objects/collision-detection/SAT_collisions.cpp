@@ -44,6 +44,17 @@ void normalize(std::vector<float>& vec) {
     for (auto && param : vec) param *= invSqrt;
 }
 
+void crossProduct3(const std::vector<float>& v1, const std::vector<float>& v2, std::vector<float>& result) {
+    assert(v1.size() == 3 && v2.size() == 3);
+    result.clear();
+    result.reserve(v1.size());
+    const float i = v1[1] * v2[2] - v2[1] * v1[2];
+    const float j = v1[0] * v2[2] - v2[0] * v1[2];
+    const float k = v1[0] * v2[1] - v2[0] * v1[1];
+    result.push_back(i); result.push_back(-j); result.push_back(k);
+
+}
+
 void multiplyMatrices(const std::vector<std::vector<float>>& m1, const std::vector<std::vector<float>>& m2, std::vector<std::vector<float>>& result) {
     for (size_t i = 0; i < m1.size(); i ++) {
         for (size_t j = 0; j < m2[0].size(); j ++) {

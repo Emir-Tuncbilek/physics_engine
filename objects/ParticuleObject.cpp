@@ -10,7 +10,7 @@ void ParticuleObject::init() {
     std::vector<float> zeros = { ZERO_VECTOR };
     std::vector<float> pos = { -5.0f, 1.0f + XOffset, 0.0f + YOffset };
     std::vector<float> velocity = { this->speed.x, this->speed.y, this->speed.z };
-    this->physics = std::make_shared<PhysicsState>(0.0f, 1.0f, 1.0f, pos, zeros, velocity, zeros);
+    this->physics = std::make_shared<PhysicsState>(0.0f, 1.0f, 1.0f, 0.9f, 0.1f, pos, zeros, velocity, zeros);
     this->physics->computeMaximumDistance(this->model3D->vertexData, 3);
     this->physics->maximumRadius *= 0.01f;   // because the model is scaled to 0.01
 

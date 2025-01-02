@@ -13,7 +13,7 @@ CollisionObject::CollisionObject(const std::string &path, const std::vector<floa
     const std::vector<float> orient = {
             orientation[0], orientation[1], orientation[2]
     };
-    this->physics = std::make_shared<PhysicsState>(0.0f, 0.0f, 0.0f, pos, orient, zeros, zeros);
+    this->physics = std::make_shared<PhysicsState>(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, pos, orient, zeros, zeros);
     this->xScale = 1.0f;
     this->yScale = 1.0f;
     this->zScale = 1.0f;

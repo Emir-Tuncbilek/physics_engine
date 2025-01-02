@@ -17,11 +17,15 @@
 #include <memory>
 #include <assert.h>
 
+#include "../objects/collision-detection/SAT_collisions.h"
+
 class PhysicsState {
 private:
     float delta_t;
     float mass;
     float momentOfInertia;
+    float elasticity;                         // between 0.0f and 1.0f
+    float friction;                           // between 0.0f and 1.0f
     std::vector<float> position;              // position of the CM
     std::vector<float> velocity;              // velocity of the CM
     std::vector<float> acceleration;          // acceleration of the CM
@@ -43,6 +47,8 @@ public:
     PhysicsState(const float &delta_t,
                  const float &mass,
                  const float &momentOfInertia,
+                 const float &elasticity,
+                 const float &friction,
                  const std::vector<float>& position,
                  const std::vector<float>& orientation,
                  const std::vector<float>& velocity,
@@ -72,7 +78,7 @@ public:
 
     void nextFrame();
 
-    void applyCollision(std::shared_ptr<PhysicsState>& p);
+    void applyCollision(std::shared_ptr<PhysicsState>& p, const std::vector<float>& normal);
 
     void updateTimeDelta(const float time) { this->delta_t = time; }
     float getMass() const { return this->mass; }
@@ -81,6 +87,9 @@ public:
     std::vector<float> getOrientation() const { return this->orientation; }
 
     friend std::ostream& operator << (std::ostream& o, const PhysicsState& physicsState);
+
+private:
+    void applyFriction(std::shared_ptr<PhysicsState>& p);
 };
 
 #endif //PHYSICS_ENGINE_PHYSICSSTATE_H

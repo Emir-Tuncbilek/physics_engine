@@ -44,8 +44,8 @@ public:
     void resize(const float &x, const float &y, const float &z);
 
     virtual std::shared_ptr<BoundingVolume> clone() = 0;
-    virtual bool isCollidingWith(std::shared_ptr<BoundingVolume> boundingVolume) = 0;
-    virtual bool testNormals(std::shared_ptr<BoundingVolume> boundingVolume) = 0;
+    virtual std::pair<bool, std::vector<float>> isCollidingWith(std::shared_ptr<BoundingVolume> boundingVolume) = 0;
+    virtual std::pair<bool, std::vector<float>> testNormals(std::shared_ptr<BoundingVolume> boundingVolume) = 0;
     virtual float getMin(const std::vector<float>& axis) const = 0;
     virtual float getMax(const std::vector<float>& axis) const = 0;
     virtual void render(glm::mat4 &view, glm::mat4 &projPersp) const = 0;

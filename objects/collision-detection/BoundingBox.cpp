@@ -14,16 +14,20 @@ BoundingBox::BoundingBox(const std::vector<float>& center, const float &width, c
     this->renderObject->init();
 }
 
-bool BoundingBox::isCollidingWith(std::shared_ptr<BoundingVolume> boundingVolume) {
+std::pair<bool, std::vector<float>> BoundingBox::isCollidingWith(std::shared_ptr<BoundingVolume> boundingVolume) {
     std::shared_ptr<BoundingBox> object = std::make_shared<BoundingBox>(*this);
-    return this->testNormals(boundingVolume) || boundingVolume->testNormals(object);
+    auto resultThis = this->testNormals(boundingVolume);
+    if (resultThis.first) return resultThis;
+    auto resultOther = boundingVolume->testNormals(object);
+    if (resultOther.first) return resultOther;
+    return { false, {} };
 }
 
 std::shared_ptr<BoundingVolume> BoundingBox::clone() {
     return std::make_shared<BoundingBox>(*this);
 }
 
-bool BoundingBox::testNormals(std::shared_ptr<BoundingVolume> boundingVolume) {
+std::pair<bool, std::vector<float>> BoundingBox::testNormals(std::shared_ptr<BoundingVolume> boundingVolume) {
     // predetermine the normals to save in computations (no need to cross product and normalize)
     const std::vector<std::vector<float>> normals = {
             {  1.0f,  0.0f,  0.0f }, // +X
@@ -33,18 +37,23 @@ bool BoundingBox::testNormals(std::shared_ptr<BoundingVolume> boundingVolume) {
             {  0.0f, -1.0f,  0.0f }, // -Y
             {  0.0f,  0.0f, -1.0f }  // -Z
     };
+    std::vector<float> normal;
     for (uint8_t i = 0; i < NUM_NORMALS; i ++) {
         // reorient the normal to the real orientation
-        std::vector<float> normal;
         // this->applyRotationMatrix(normals[i], normal);
         // detect collision
         float objectMin = this->getMin(normals[i]),           objectMax = this->getMax(normals[i]);
         float otherMin  = boundingVolume->getMin(normals[i]), otherMax = boundingVolume->getMax(normals[i]);
         if (!SATIsCollision(objectMin, objectMax, otherMin, otherMax)) {
-            return false;
+            return { false, {} };
         }
     }
-    return true;
+    std::vector<float> collisionNormal;
+    for (uint8_t i = 0; i < DIMENSIONS; i ++) {
+        collisionNormal.push_back(boundingVolume->getGeomCenter()[i] - this->center[i]);
+    }
+    normalize(collisionNormal);
+    return { true, BoundingBox::findBestNormal(collisionNormal) };
 }
 
 float BoundingBox::getMin(const std::vector<float>& axis) const {
@@ -87,4 +96,27 @@ void BoundingBox::render(glm::mat4 &view, glm::mat4 &projPersp) const {
     this->renderObject->physics->setNewPos(this->center);
     this->renderObject->physics->setNewOrientation(this->orientation);
     this->renderObject->render(view, projPersp, 1.0f);  // time is not needed in here
+}
+
+std::vector<float> BoundingBox::findBestNormal(const std::vector<float>& normal) {
+    const std::vector<std::vector<float>> normals = {
+            {  1.0f,  0.0f,  0.0f }, // +X
+            {  0.0f,  1.0f,  0.0f }, // +Y
+            {  0.0f,  0.0f,  1.0f }, // +Z
+            { -1.0f,  0.0f,  0.0f }, // -X
+            {  0.0f, -1.0f,  0.0f }, // -Y
+            {  0.0f,  0.0f, -1.0f }  // -Z
+    };
+    float loss;
+    float bestLoss = std::numeric_limits<float>::infinity();
+    std::vector<float> bestNormal;
+    for (uint8_t i = 0; i < NUM_NORMALS; i ++) {
+        loss = 0.0f;
+        for (uint8_t j = 0; j < DIMENSIONS; j ++) loss += (normals[i][j] - normal[j]) * (normals[i][j] - normal[j]);
+        if (loss < bestLoss) {
+            bestLoss = loss;
+            bestNormal = normal;
+        }
+    }
+    return bestNormal;
 }

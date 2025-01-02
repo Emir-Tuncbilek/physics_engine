@@ -8,13 +8,16 @@ void CollisionMesh::addBoundingVolume(const std::shared_ptr<BoundingVolume>& vol
     this->volumes.push_back(volume);
 }
 
-bool CollisionMesh::checkCollision(const CollisionMesh &other) const {
+std::pair<bool, std::vector<float>> CollisionMesh::checkCollision(const CollisionMesh &other) const {
     for (auto && volume : this->volumes) {
         for (auto && otherVolume : other.volumes) {
-            if (volume->isCollidingWith(otherVolume)) return true;
+            auto collisionVerdict = volume->isCollidingWith(otherVolume);
+            if (collisionVerdict.first) {
+                return collisionVerdict;
+            }
         }
     }
-    return false;
+    return { false, { 0.0f }};
 }
 
 std::unique_ptr<CollisionMesh> CollisionMesh::clone() const {

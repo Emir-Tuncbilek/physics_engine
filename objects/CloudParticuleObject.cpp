@@ -38,7 +38,7 @@ void CloudParticuleObject::init() {
                 randomFloatInRange(-this->_maxYDistance, this->_maxYDistance)
         );
         o->shaderPaths = this->shaderPaths;
-        o->speed = glm::vec3(this->_airSpeed, 0.0f, 0.0f);
+        o->speed = glm::vec3(this->_airSpeed, 0.0f, 2.0f);
         totalParticuleSpeed += o->speed.x;
         o->init();
         this->particules.push_back(std::move(o));
@@ -50,8 +50,8 @@ void CloudParticuleObject::init() {
     }
     const std::vector<float> zeros = { ZERO_VECTOR };
     const std::vector<float> pos = { -5.0f, 1.0f, 0.0f };
-    const std::vector<float> velocity = { totalParticuleSpeed/(float)totalParticles, 0.0f, 0.0f };         // the velocity of the cloud is simply the average speed of all the particules
-    this->physics = std::make_shared<PhysicsState>(0.0f, 1.0f, 0.0f, pos, zeros, velocity, zeros);  // helps picture the cloud of particules as a single rigid body
+    const std::vector<float> velocity = { totalParticuleSpeed/(float)totalParticles, 0.0f, 2.0f };         // the velocity of the cloud is simply the average speed of all the particules
+    this->physics = std::make_shared<PhysicsState>(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, pos, zeros, velocity, zeros);  // helps picture the cloud of particules as a single rigid body
     std::cout << "Loading: 100% complete!" << std::endl;
 }
 

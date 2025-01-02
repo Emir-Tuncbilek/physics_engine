@@ -23,6 +23,8 @@ float quakeIIIFastInverseSqrt(const float& x);
 
 void normalize(std::vector<float>& vec);
 
+void crossProduct3(const std::vector<float>& v1, const std::vector<float>& v2, std::vector<float>& result);
+
 void multiplyMatrices(const std::vector<std::vector<float>>& m1, const std::vector<std::vector<float>>& m2, std::vector<std::vector<float>>& result);
 
 #endif //PHYSICS_ENGINE_SAT_COLLISIONS_H

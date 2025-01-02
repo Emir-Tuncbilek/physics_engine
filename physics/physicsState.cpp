@@ -6,6 +6,8 @@
 PhysicsState::PhysicsState(const float &delta_t,
                            const float &mass,
                            const float &momentOfInertia,
+                           const float &elasticity,
+                           const float &friction,
                            const std::vector<float>& position,
                            const std::vector<float>& orientation,
                            const std::vector<float>& velocity,
@@ -14,6 +16,10 @@ PhysicsState::PhysicsState(const float &delta_t,
         maximumRadius(0.0f), position(position), orientation(orientation),
         velocity(velocity), angularVelocity(angularVelocity)
 {
+    assert (elasticity <= 1.0f && elasticity >= 0.0f);
+    assert (friction <= 1.0f && friction >= 0.0f);
+    this->elasticity = elasticity;
+    this->friction = friction;
     this->acceleration = { ZERO_VECTOR };
     this->torque = { ZERO_VECTOR };
     this->angularAcceleration = { ZERO_VECTOR };
@@ -114,20 +120,73 @@ void PhysicsState::nextFrame() {
     }
 }
 
-void PhysicsState::applyCollision(std::shared_ptr<PhysicsState> &p)  {
+void PhysicsState::applyCollision(std::shared_ptr<PhysicsState> &p, const std::vector<float> &normal) {
+    std::vector<float> relVelocity;
+    float relNormalV = 0.0f;
+
+    // Calculate the relative velocity along the normal
+    for (uint8_t i = 0; i < DIMENSIONS; i++) {
+        relVelocity.push_back(this->velocity[i] - p->velocity[i]);
+        relNormalV += relVelocity[i] * normal[i];
+    }
+
+    // If the relative velocity is less than or equal to zero, the objects are not moving towards each other or are already moving apart
+    if (relNormalV <= 0.0f) return;
+
+    // If either object has infinite mass, it is immovable, so no impulse is applied to that object
+    if (this->mass == std::numeric_limits<float>::infinity() || p->mass == std::numeric_limits<float>::infinity()) {
+        // For immovable objects, only the movable object receives the impulse
+        if (this->mass == std::numeric_limits<float>::infinity()) {
+            p->velocity[0] -= relNormalV * normal[0]; // Apply impulse to p
+            p->velocity[1] -= relNormalV * normal[1];
+            p->velocity[2] -= relNormalV * normal[2];
+        } else {
+            this->velocity[0] -= relNormalV * normal[0]; // Apply impulse to this
+            this->velocity[1] -= relNormalV * normal[1];
+            this->velocity[2] -= relNormalV * normal[2];
+        }
+        return;
+    }
+
+    // Apply collision impulse (elasticity / restitution)
+    float m1 = this->mass;
+    float m2 = p->mass;
+    const float bounciness = std::min(this->elasticity, p->elasticity);
+
+    // Calculate the impulse scaler for the collision response
+    float impulseScaler = -(1.0f + bounciness) * relNormalV * (m1 * m2) / (m1 + m2);
+
+    // Update velocities due to collision for both objects
+    for (int i = 0; i < 3; i++) {
+        this->velocity[i] += impulseScaler / m1 * normal[i];
+        p->velocity[i] -= impulseScaler / m2 * normal[i];
+    }
+
+    // Apply friction (if needed, call the friction function)
+    this->applyFriction(p);
+}
+
+
+void PhysicsState::applyFriction(std::shared_ptr<PhysicsState> &p) {
+
+}
+
+/*
+void PhysicsState::applyCollision(std::shared_ptr<PhysicsState>& p,
+                                  const std::vector<float>& normal,
+                                  const std::vector<float>& thisPOA,
+                                  const std::vector<float>& otherPOA)  {
     // Calculate the normal vector between the two centers of mass
     std::vector<float> normalVec = {
             p->getPositionOfCM()[0] - this->getPositionOfCM()[0],
             p->getPositionOfCM()[1] - this->getPositionOfCM()[1],
             p->getPositionOfCM()[2] - this->getPositionOfCM()[2]
     };
-    float length = sqrt((normalVec[0] * normalVec[0]) +
-                        (normalVec[1] * normalVec[1]) +
-                        (normalVec[2] * normalVec[2]));
+    float length = normalVec[0] * normalVec[0] + normalVec[1] * normalVec[1] + normalVec[2] * normalVec[2];
     if (length == 0.0f) return; // Avoid division by zero
-    for (float& i : normalVec) i /= length;
+    length = quakeIIIFastInverseSqrt(length);
+    for (float& i : normalVec) i *= length;
 
-    // Compute relative velocity along the normal
     float relativeVelocity = 0.0f;
     for (int i = 0; i < DIMENSIONS; i++) {
         relativeVelocity += (p->velocity[i] - this->velocity[i]) * normalVec[i];
@@ -194,6 +253,7 @@ void PhysicsState::applyCollision(std::shared_ptr<PhysicsState> &p)  {
         p->velocity[i] = v2f[i] + v2it[i];
     }
 }
+*/
 
 std::ostream& operator << (std::ostream& o, const PhysicsState& physicsState) {
     o << "Position: (" << physicsState.position[0] << ", " << physicsState.position[1] << ", " << physicsState.position[2] << ") m\n";

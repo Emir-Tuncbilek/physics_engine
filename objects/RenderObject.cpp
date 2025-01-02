@@ -106,14 +106,17 @@ void RenderObject::addBoundingVolume(const std::shared_ptr<BoundingVolume> &volu
 }
 
 bool RenderObject::isIntersecting(const std::shared_ptr<RenderObject> &o) const {
-    return this->collisionMesh->checkCollision(* o->collisionMesh);
+    return (this->collisionMesh->checkCollision(* o->collisionMesh)).first;
 }
 
 void RenderObject::computeCollisions(std::shared_ptr<RenderObject> &o) {
     // data available from this->model3D->m_shape.vertexData;
     for (auto && thisObject : this->getObjects()) {
         for (auto && object : o->getObjects()) {
-            if (thisObject->isIntersecting(object)) thisObject->physics->applyCollision(object->physics);
+            auto collisionPair = thisObject->collisionMesh->checkCollision(* o->collisionMesh);
+            if (collisionPair.first) {
+                thisObject->physics->applyCollision(object->physics, collisionPair.second);
+            }
         }
     }
 }

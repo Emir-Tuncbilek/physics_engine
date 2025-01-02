@@ -3,9 +3,9 @@
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec2 inTexCoords;
 layout (location = 2) in vec3 normals;
+// layout (location = 3) in mat4 mvp;
 
 uniform mat4 U_MVP;
-
 
 void main() {
     const vec3 velocity = vec3(1.0f, 0.0f, 0.0f);

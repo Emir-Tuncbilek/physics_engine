@@ -23,7 +23,7 @@ public:
     ~CollisionMesh() = default;
     /* Necessary functions */
     void addBoundingVolume(const std::shared_ptr<BoundingVolume>& volume);
-    bool checkCollision(const CollisionMesh& other) const;
+    std::pair<bool, std::vector<float>> checkCollision(const CollisionMesh& other) const;
     std::unique_ptr<CollisionMesh> clone() const;
     void translate(const std::vector<float>& offset);
     void rotate(const std::vector<std::vector<float>>& rotationMatrix);

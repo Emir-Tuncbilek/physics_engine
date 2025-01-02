@@ -11,12 +11,16 @@ std::shared_ptr<BoundingVolume> BoundingSphere::clone() {
     return sphere;
 }
 
-bool BoundingSphere::isCollidingWith(std::shared_ptr<BoundingVolume> boundingVolume) {
+std::pair<bool, std::vector<float>> BoundingSphere::isCollidingWith(std::shared_ptr<BoundingVolume> boundingVolume) {
     std::shared_ptr<BoundingSphere> object = std::make_shared<BoundingSphere>(*this);
-    return this->testNormals(boundingVolume) || boundingVolume->testNormals(object);
+    auto resultThis = this->testNormals(boundingVolume);
+    if (resultThis.first) return resultThis;
+    auto resultOther = boundingVolume->testNormals(object);
+    if (resultOther.first) return resultOther;
+    return { false, {} };
 }
 
-bool BoundingSphere::testNormals(std::shared_ptr<BoundingVolume> boundingVolume) {
+std::pair<bool, std::vector<float>> BoundingSphere::testNormals(std::shared_ptr<BoundingVolume> boundingVolume) {
     // Using SAT collision logic, a normal vector can be defined as any outgoing point from the geometric center.
     // The problem is clear : we have an infinite number of normals to test. We can try the following :
     // - define 1 normal vector from the center of the sphere to the center of the other bounding object.
@@ -39,7 +43,9 @@ bool BoundingSphere::testNormals(std::shared_ptr<BoundingVolume> boundingVolume)
     // detect collision
     float objectMin = this->getMin(normalVec),          objectMax = this->getMax(normalVec);
     float otherMin  = boundingVolume->getMin(normalVec), otherMax = boundingVolume->getMax(normalVec);
-    return SATIsCollision(objectMin, objectMax, otherMin, otherMax);
+    bool result = SATIsCollision(objectMin, objectMax, otherMin, otherMax);
+    if (result) return {result, normalVec};
+    return {false, {}};
 }
 
 float BoundingSphere::getMin(const std::vector<float>& axis) const {
