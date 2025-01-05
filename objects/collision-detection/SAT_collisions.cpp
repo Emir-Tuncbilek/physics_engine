@@ -47,7 +47,7 @@ void normalize(std::vector<float>& vec) {
 float getModule(const std::vector<float>& vec) {
     float len = 0.0f;
     for (auto && param : vec) len += param * param;
-    return std::sqrt(len);
+    return sqrt(len);
 }
 
 void crossProduct3(const std::vector<float>& v1, const std::vector<float>& v2, std::vector<float>& result) {
