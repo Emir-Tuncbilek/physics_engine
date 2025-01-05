@@ -7,6 +7,7 @@
 
 #define DIMENSIONS 3
 #define ZERO_VECTOR 0.0f, 0.0f, 0.0f
+#define MIN_VELOCITY_THRESHOLD 0.1f
 
 #include <iostream>
 #include <vector>
@@ -19,7 +20,7 @@
 
 #include "../objects/collision-detection/SAT_collisions.h"
 
-class PhysicsState {
+class PhysicsState : public std::enable_shared_from_this<PhysicsState> {
 private:
     float delta_t;
     float mass;
@@ -33,12 +34,6 @@ private:
     std::vector<float> orientation;
     std::vector<float> angularVelocity;
     std::vector<float> angularAcceleration;
-
-    // original settings
-    std::vector<float> o_position;
-    std::vector<float> o_velocity;
-    std::vector<float> o_orientation;
-    std::vector<float> o_angularVelocity;
 
 public:
 
@@ -55,6 +50,8 @@ public:
                  const std::vector<float>& angularVelocity);
 
     ~PhysicsState() = default;
+
+    PhysicsState(const PhysicsState& other) = default;
 
     void reset();
 
@@ -86,7 +83,17 @@ public:
     std::vector<float> getPositionOfCM() const { return this->position; }
     std::vector<float> getOrientation() const { return this->orientation; }
 
+    bool isImmobile(PhysicsState& p);
+
     friend std::ostream& operator << (std::ostream& o, const PhysicsState& physicsState);
+
+public:
+    // original settings
+    bool immobile;
+    std::vector<float> o_position;
+    std::vector<float> o_velocity;
+    std::vector<float> o_orientation;
+    std::vector<float> o_angularVelocity;
 
 private:
     void applyFriction(std::shared_ptr<PhysicsState>& p);

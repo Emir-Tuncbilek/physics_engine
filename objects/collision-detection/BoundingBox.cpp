@@ -95,7 +95,7 @@ float BoundingBox::getPositionOf(const std::vector<float>& axis, const std::func
 void BoundingBox::render(glm::mat4 &view, glm::mat4 &projPersp) const {
     this->renderObject->physics->setNewPos(this->center);
     this->renderObject->physics->setNewOrientation(this->orientation);
-    this->renderObject->render(view, projPersp, 1.0f);  // time is not needed in here
+    this->renderObject->render(view, projPersp);
 }
 
 std::vector<float> BoundingBox::findBestNormal(const std::vector<float>& normal) {
@@ -115,7 +115,7 @@ std::vector<float> BoundingBox::findBestNormal(const std::vector<float>& normal)
         for (uint8_t j = 0; j < DIMENSIONS; j ++) loss += (normals[i][j] - normal[j]) * (normals[i][j] - normal[j]);
         if (loss < bestLoss) {
             bestLoss = loss;
-            bestNormal = normal;
+            bestNormal = normals[i];
         }
     }
     return bestNormal;

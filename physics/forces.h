@@ -11,9 +11,9 @@
 
 #include "./physicsState.h"
 
+#define GRAVITY_ACCELERATION_RATE 9.81f
+
 class Force {
-protected:
-    virtual void apply(std::shared_ptr<PhysicsState>& physicsState);
 
 private:
     std::vector<float> _force;
@@ -26,18 +26,19 @@ public:
 
     ~Force() = default;
 
+    virtual void apply(std::shared_ptr<PhysicsState>& physicsState);
+
     virtual void apply(std::vector<std::shared_ptr<PhysicsState>>& physicsState);
 };
 
 class ForceField : public Force {
-protected:
-    void apply(std::shared_ptr<PhysicsState>& physicsState) override;
-
 private:
     std::vector<float> _forceField;
 
 public:
     ForceField(const std::vector<float>& field);
+
+    void apply(std::shared_ptr<PhysicsState>& physicsState) override;
 
     void apply(std::vector<std::shared_ptr<PhysicsState>>& physicsState) override;
 };

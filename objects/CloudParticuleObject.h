@@ -30,15 +30,17 @@ public:
 
     void reset() override;
 
-    std::vector<std::shared_ptr<RenderObject>> getObjects() const override;
+    std::vector<std::shared_ptr<RenderObject>> getObjects() override;
 
     void setContextFromScene(const std::shared_ptr<SceneContext> &sceneContext) override;
 
-    void render(glm::mat4 &view, glm::mat4 &projPersp, const float& delta_t) override;
+    void render(glm::mat4 &view, glm::mat4 &projPersp) override;
 
     std::vector<std::shared_ptr<PhysicsState>> getPhysicState() override;
 
     std::shared_ptr<RenderObject> clone() const override;
+
+    void updatePhysics(const float &delta_t) override;
 
 private:
     std::string particuleObjectPath;

@@ -9,7 +9,7 @@ void F1Object::init() {
     const std::vector<float> pos = { 0.0, 0.0f, 1.0f };
     const std::vector<float> zeros = { ZERO_VECTOR };
     const std::vector<float> orientation = { M_PI/2, M_PI, M_PI/2 };    // 90˚, 180˚, 90˚
-    this->physics = std::make_shared<PhysicsState>(0.0f, 10.0f, 0.0f, 0.9f, 0.1f, pos, orientation, zeros, zeros);
+    this->physics = std::make_shared<PhysicsState>(0.0f, 100.0f, 0.0f, 0.9f, 0.1f, pos, orientation, zeros, zeros);
     this->physics->computeMaximumDistance(this->model3D->vertexData, 3);
 
     // setup the bounding boxes for collision detection
@@ -22,14 +22,13 @@ void F1Object::init() {
     // this->physics->maximumRadius *= 0.01f;   // because the model is scaled to 0.01
 }
 
-std::vector<std::shared_ptr<RenderObject>> F1Object::getObjects() const {
-    std::vector<std::shared_ptr<RenderObject>> objects = { std::make_shared<F1Object>(*this) };
+std::vector<std::shared_ptr<RenderObject>> F1Object::getObjects() {
+    std::vector<std::shared_ptr<RenderObject>> objects = { shared_from_this() };
     return objects;
 }
 
-void F1Object::render(glm::mat4 &view, glm::mat4 &projPersp, const float& delta_t) {
+void F1Object::render(glm::mat4 &view, glm::mat4 &projPersp) {
     const PhysicsState oldState = *this->physics;
-    this->physics->updateTimeDelta(delta_t);
     this->translateCollisionMeshToState();
     this->rotateCollisionMeshToState();
     if (!this->context->renderCollisionMesh) {

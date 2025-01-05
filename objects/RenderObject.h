@@ -27,10 +27,11 @@
 
 #define OFFSET 8
 
-class RenderObject {
+class RenderObject : public std::enable_shared_from_this<RenderObject> {
 protected:
     std::unique_ptr<CollisionMesh> collisionMesh;
     std::shared_ptr<SceneContext> context;
+    std::vector<float> lastComputedNormal;
 public:
     RenderObject();
 
@@ -44,7 +45,7 @@ public:
     virtual void resize(const float &x, const float &y, const float &z);
     void computeCollisions(std::shared_ptr<RenderObject>& o);
     void addBoundingVolume(const std::shared_ptr<BoundingVolume>& volume);
-    bool isIntersecting(const std::shared_ptr<RenderObject>& o) const;
+    virtual void updatePhysics(const float& delta_t);
     virtual void init();
     virtual void translateCollisionMeshToState();
     virtual void rotateCollisionMeshToState();
@@ -53,9 +54,9 @@ public:
 
     virtual std::vector<std::shared_ptr<PhysicsState>> getPhysicState();
 
-    virtual std::vector<std::shared_ptr<RenderObject>> getObjects() const = 0;
+    virtual std::vector<std::shared_ptr<RenderObject>> getObjects() = 0;
     virtual std::shared_ptr<RenderObject> clone() const = 0;
-    virtual void render(glm::mat4 &view, glm::mat4 &projPersp, const float& delta_t) = 0;
+    virtual void render(glm::mat4 &view, glm::mat4 &projPersp) = 0;
 
 public:
     std::vector<std::pair<std::string, GLenum>> shaderPaths;
@@ -65,6 +66,7 @@ public:
     std::shared_ptr<Model> model3D;
     std::shared_ptr<PhysicsState> physics;
     GLint mvpModelLocation;
+    std::shared_ptr<RenderObject> collidingWith;
 };
 
 

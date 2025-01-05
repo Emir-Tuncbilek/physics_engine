@@ -23,8 +23,13 @@ float quakeIIIFastInverseSqrt(const float& x);
 
 void normalize(std::vector<float>& vec);
 
+float getModule(const std::vector<float>& vec);
+
 void crossProduct3(const std::vector<float>& v1, const std::vector<float>& v2, std::vector<float>& result);
 
 void multiplyMatrices(const std::vector<std::vector<float>>& m1, const std::vector<std::vector<float>>& m2, std::vector<std::vector<float>>& result);
+
+/* returns v1f, v2f, assuming constant mass */
+std::pair<float, float> solveLinearFinalVelocitiesAfterCollision(const float& v1i, const float& v2i, const float& m1, const float& m2);
 
 #endif //PHYSICS_ENGINE_SAT_COLLISIONS_H

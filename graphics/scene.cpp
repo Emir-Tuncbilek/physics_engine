@@ -51,18 +51,22 @@ void Scene::render(glm::mat4 &view, glm::mat4 &projPersp) {
     this->fps = 1.0f / delta_t;
     delta_t *= this->state.pause ? 0.0f : this->state.timeMultiplier;
     this->state.timeElapsed += (double) delta_t;
-    delta_t *= TIME_NORMALIZING_FACTOR;
+    delta_t = PHYSICS_TIME_INTERVALS;
+    delta_t *= this->state.pause ? 0.0f : this->state.timeMultiplier;
     this->startTime = endTime;
 
     this->drawMenu();
 
     for (int i = 0; i < this->m_res.objects.size(); i ++) {
+        std::vector<std::shared_ptr<PhysicsState>> states = this->m_res.objects[i]->getPhysicState();
         for (int j = 0; j < this->forces.size(); j ++ ) {
-            std::vector<std::shared_ptr<PhysicsState>> states = this->m_res.objects[i]->getPhysicState();
             this->forces[j]->apply(states);
-            for (std::shared_ptr<PhysicsState>& state : states) state->resetAccelerations();
         }
-        this->m_res.objects[i]->render(view, projPersp, delta_t);
+        this->m_res.objects[i]->updatePhysics(delta_t);
+        this->m_res.objects[i]->render(view, projPersp);
+    }
+    for (auto && object : this->m_res.objects) {
+        for (auto && states : object->getPhysicState()) states->resetAccelerations();
     }
     this->applyCollisionPhysics();
     this->tick ++;

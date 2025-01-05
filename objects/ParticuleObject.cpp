@@ -10,7 +10,7 @@ void ParticuleObject::init() {
     std::vector<float> zeros = { ZERO_VECTOR };
     std::vector<float> pos = { -5.0f, 1.0f + XOffset, 0.0f + YOffset };
     std::vector<float> velocity = { this->speed.x, this->speed.y, this->speed.z };
-    this->physics = std::make_shared<PhysicsState>(0.0f, 1.0f, 1.0f, 0.9f, 0.1f, pos, zeros, velocity, zeros);
+    this->physics = std::make_shared<PhysicsState>(0.0f, 0.5f, 1.0f, 0.9f, 0.1f, pos, zeros, velocity, zeros);
     this->physics->computeMaximumDistance(this->model3D->vertexData, 3);
     this->physics->maximumRadius *= 0.01f;   // because the model is scaled to 0.01
 
@@ -26,14 +26,13 @@ void ParticuleObject::init() {
 
 }
 
-std::vector<std::shared_ptr<RenderObject>> ParticuleObject::getObjects() const {
-    std::vector<std::shared_ptr<RenderObject>> objects = { std::make_shared<ParticuleObject>(*this) };
+std::vector<std::shared_ptr<RenderObject>> ParticuleObject::getObjects() {
+    std::vector<std::shared_ptr<RenderObject>> objects = { this->shared_from_this() };
     return objects;
 }
 
-void ParticuleObject::render(glm::mat4 &view, glm::mat4 &projPersp, const float& delta_t) {
+void ParticuleObject::render(glm::mat4 &view, glm::mat4 &projPersp) {
     const PhysicsState oldState = *this->physics;
-    this->physics->updateTimeDelta(delta_t);
     this->rotateCollisionMeshToState();
     this->translateCollisionMeshToState();
     if (!this->context->renderCollisionMesh) {

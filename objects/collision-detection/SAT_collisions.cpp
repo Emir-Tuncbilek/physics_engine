@@ -44,6 +44,12 @@ void normalize(std::vector<float>& vec) {
     for (auto && param : vec) param *= invSqrt;
 }
 
+float getModule(const std::vector<float>& vec) {
+    float len = 0.0f;
+    for (auto && param : vec) len += param * param;
+    return std::sqrt(len);
+}
+
 void crossProduct3(const std::vector<float>& v1, const std::vector<float>& v2, std::vector<float>& result) {
     assert(v1.size() == 3 && v2.size() == 3);
     result.clear();
@@ -62,3 +68,25 @@ void multiplyMatrices(const std::vector<std::vector<float>>& m1, const std::vect
         }
     }
 }
+
+std::pair<float, float> solveLinearFinalVelocitiesAfterCollision(const float& v1i, const float& v2i, const float& m1, const float& m2) {
+    // m1 . v1i + m2 . v2i = m1 . v1f + m2 . v2f
+    // v1i + v1f = v2i + v2f
+    // unknowns are v1f and v2f:
+    // compute cst term : m1 . v1i + m2 . v2i
+    // isolate v1f : v1f = (v2i - v1i) + v2f
+    // substitute in equation:
+    // cst = m1 . [(v2i - v1i) + v2f] + m2 . v2f
+    // cst - m1 . (v2i - v1i) = v2f (m1 + m2)
+    // ->  newCst = m1 . v1i + m2 . v2i - m1 . (v2i - v1i) = m1 . (2 . v1i - v2i) + m2 . v2i
+    // final code:
+    // newCst =  m1 . (2 . v1i - v2i) + m2 . v2i
+    // v2f = newCst / ( m1 + m2 )
+    // v1f = (v2i - v1i) + v2f
+    const float cst = m1 * (2.0f * v1i - v2i) + v2i * m2;
+    float invMass = quakeIIIFastInverseSqrt(m1 + m2); invMass *= invMass;
+    const float v2f = cst * invMass;
+    const float v1f = (v2i - v1i) + v2f;
+    return { v1f, v2f };
+}
+

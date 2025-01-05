@@ -17,8 +17,8 @@ public:
     ~ParticuleObject() = default;
 
     void init() override;
-    std::vector<std::shared_ptr<RenderObject>> getObjects() const override;
-    void render(glm::mat4 &view, glm::mat4 &projPersp, const float& delta_t) override;
+    std::vector<std::shared_ptr<RenderObject>> getObjects() override;
+    void render(glm::mat4 &view, glm::mat4 &projPersp) override;
     std::shared_ptr<RenderObject> clone() const override;
 
 public:

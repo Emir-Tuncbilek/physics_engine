@@ -20,7 +20,7 @@
 #include "../external/imgui/imgui.h"
 
 #define FPS_FRAME_UPDATE_RATE 50
-#define TIME_NORMALIZING_FACTOR 1.0f
+#define PHYSICS_TIME_INTERVALS 0.0025   /* 400 Hz */
 
 class Scene {
 public:
@@ -31,6 +31,8 @@ public:
 
     void drawMenu();
     void render(glm::mat4& view, glm::mat4& projPersp);
+
+    void runPhysicsThread();
 
     std::vector<std::shared_ptr<Force>> forces;
 

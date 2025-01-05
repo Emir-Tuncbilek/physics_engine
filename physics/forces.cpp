@@ -21,6 +21,9 @@ void Force::apply(std::shared_ptr<PhysicsState>& physicsState) {
     // a force causes an acceleration of the CM, a change in torque and a change in acceleration
     // F = m . a -> a = F/m
     std::vector<float> newAcceleration = this->_force;
+    // apply force in the normal direction if immobile
+    // Todo: change this for force to be applied along a normal, not just in the opposite direction
+    if (physicsState->immobile) for (auto && param : newAcceleration) param *= -1.0f;
     for (float& a : newAcceleration) { a /= (float) physicsState->getMass(); }
 
     // M = r x F
@@ -46,6 +49,7 @@ void Force::apply(std::shared_ptr<PhysicsState>& physicsState) {
     for (float& a : newAngularAcceleration) { a /= (float) physicsState->getMomentOfInertia(); }
 
     physicsState->changeState(newAcceleration, torque, newAngularAcceleration);
+    physicsState->immobile = false;
 }
 
 void Force::apply(std::vector<std::shared_ptr<PhysicsState>>& physicsState) {
@@ -59,6 +63,7 @@ ForceField::ForceField(const std::vector<float>& field) : Force(field, {}) {
 }
 
 void ForceField::apply(std::shared_ptr<PhysicsState> &physicsState) {
+    if (physicsState->immobile) return;
     std::vector<float> zeros = { ZERO_VECTOR };
     physicsState->changeState(this->_forceField, zeros, zeros);
 }

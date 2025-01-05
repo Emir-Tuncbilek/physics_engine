@@ -38,7 +38,7 @@ void CloudParticuleObject::init() {
                 randomFloatInRange(-this->_maxYDistance, this->_maxYDistance)
         );
         o->shaderPaths = this->shaderPaths;
-        o->speed = glm::vec3(this->_airSpeed, 0.0f, 2.0f);
+        o->speed = glm::vec3(this->_airSpeed, 0.0f, 1.0f);
         totalParticuleSpeed += o->speed.x;
         o->init();
         this->particules.push_back(std::move(o));
@@ -50,7 +50,7 @@ void CloudParticuleObject::init() {
     }
     const std::vector<float> zeros = { ZERO_VECTOR };
     const std::vector<float> pos = { -5.0f, 1.0f, 0.0f };
-    const std::vector<float> velocity = { totalParticuleSpeed/(float)totalParticles, 0.0f, 2.0f };         // the velocity of the cloud is simply the average speed of all the particules
+    const std::vector<float> velocity = { totalParticuleSpeed/(float)totalParticles, 0.0f, 1.0f };         // the velocity of the cloud is simply the average speed of all the particules
     this->physics = std::make_shared<PhysicsState>(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, pos, zeros, velocity, zeros);  // helps picture the cloud of particules as a single rigid body
     std::cout << "Loading: 100% complete!" << std::endl;
 }
@@ -59,10 +59,10 @@ void CloudParticuleObject::reset() {
     for (auto && particule : this->particules) particule->reset();
 }
 
-std::vector<std::shared_ptr<RenderObject>> CloudParticuleObject::getObjects() const {
+std::vector<std::shared_ptr<RenderObject>> CloudParticuleObject::getObjects() {
     std::vector<std::shared_ptr<RenderObject>> objects;
     objects.reserve(this->_numParticules);
-    for (auto && particule : this->particules) { objects.push_back(particule->clone()); }
+    for (auto && particule : this->particules) { objects.push_back(particule->shared_from_this()); }
     return objects;
 }
 
@@ -71,11 +71,9 @@ void CloudParticuleObject::setContextFromScene(const std::shared_ptr<SceneContex
     for (auto && object : this->particules) object->setContextFromScene(sceneContext);
 }
 
-void CloudParticuleObject::render(glm::mat4 &view, glm::mat4 &projPersp, const float& delta_t) {
-    this->physics->updateTimeDelta(delta_t);
-    this->physics->nextFrame();
+void CloudParticuleObject::render(glm::mat4 &view, glm::mat4 &projPersp) {
     for (size_t i = 0; i < this->_numParticules; i ++) {
-        this->particules[i]->render(view, projPersp, delta_t);
+        this->particules[i]->render(view, projPersp);
     }
 }
 
@@ -90,4 +88,9 @@ std::vector<std::shared_ptr<PhysicsState>> CloudParticuleObject::getPhysicState(
 
 std::shared_ptr<RenderObject> CloudParticuleObject::clone() const {
     return std::make_unique<CloudParticuleObject>(*this);
+}
+
+void CloudParticuleObject::updatePhysics(const float &delta_t) {
+    RenderObject::updatePhysics(delta_t);
+    for (auto && particule : this->particules) particule->updatePhysics(delta_t);
 }

@@ -21,6 +21,7 @@ RenderObject::RenderObject() {
     this->mvpModelLocation = -1;
     this->physics = nullptr;
     this->collisionMesh = std::make_unique<CollisionMesh>();
+    this->lastComputedNormal = {};
 }
 
 RenderObject::RenderObject(const std::string& modelPath) {
@@ -32,22 +33,8 @@ RenderObject::RenderObject(const std::string& modelPath) {
     this->mvpModelLocation = -1;
     this->physics = nullptr;
     this->collisionMesh = std::make_unique<CollisionMesh>();
-}
-
-void RenderObject::setContextFromScene(const std::shared_ptr<SceneContext>& sceneContext) {
-    this->context = sceneContext;
-}
-
-void RenderObject::renderCollisionMesh(glm::mat4 &view, glm::mat4 &projPersp, const PhysicsState& oldState) {
-    if (this->context->renderCollisionMesh) {
-        auto differences = PhysicsState::getDifferenceInStates(oldState, *this->physics);
-        const std::vector<float> position = {
-                this->physics->getPositionOfCM()[0], this->physics->getPositionOfCM()[1],this->physics->getPositionOfCM()[2],
-        };
-        this->collisionMesh->translate(position);
-        this->collisionMesh->rotate(differences.second);
-        this->collisionMesh->render(view, projPersp);
-    }
+    this->collidingWith = nullptr;
+    this->lastComputedNormal = {};
 }
 
 RenderObject::RenderObject(const RenderObject& other) {
@@ -59,6 +46,25 @@ RenderObject::RenderObject(const RenderObject& other) {
     this->shaderPaths = other.shaderPaths;
     this->physics = other.physics;
     this->collisionMesh = other.collisionMesh->clone();
+    this->collidingWith = other.collidingWith;
+    this->lastComputedNormal = other.lastComputedNormal;
+}
+
+void RenderObject::setContextFromScene(const std::shared_ptr<SceneContext>& sceneContext) {
+    this->context = sceneContext;
+}
+
+void RenderObject::renderCollisionMesh(glm::mat4 &view, glm::mat4 &projPersp, const PhysicsState& oldState) {
+    if (this->context->renderCollisionMesh) {
+        auto differences = PhysicsState::getDifferenceInStates(oldState, *this->physics);
+        const std::vector<float> position = {
+                this->physics->getPositionOfCM()[0], this->physics->getPositionOfCM()[1],
+                this->physics->getPositionOfCM()[2],
+        };
+        this->collisionMesh->translate(position);
+        this->collisionMesh->rotate(differences.second);
+        this->collisionMesh->render(view, projPersp);
+    }
 }
 
 void RenderObject::init() {
@@ -105,17 +111,27 @@ void RenderObject::addBoundingVolume(const std::shared_ptr<BoundingVolume> &volu
     this->collisionMesh->addBoundingVolume(volume);
 }
 
-bool RenderObject::isIntersecting(const std::shared_ptr<RenderObject> &o) const {
-    return (this->collisionMesh->checkCollision(* o->collisionMesh)).first;
-}
-
 void RenderObject::computeCollisions(std::shared_ptr<RenderObject> &o) {
     // data available from this->model3D->m_shape.vertexData;
     for (auto && thisObject : this->getObjects()) {
         for (auto && object : o->getObjects()) {
-            auto collisionPair = thisObject->collisionMesh->checkCollision(* o->collisionMesh);
+            auto collisionPair = thisObject->collisionMesh->checkCollision(* object->collisionMesh);
             if (collisionPair.first) {
+                if (thisObject->physics->isImmobile(*object->physics)) {
+                    thisObject->collidingWith = nullptr;
+                    object->collidingWith = nullptr;
+                }
+                if (object == thisObject->collidingWith) continue;
+                thisObject->lastComputedNormal = collisionPair.second;
+                object->lastComputedNormal = collisionPair.second;
                 thisObject->physics->applyCollision(object->physics, collisionPair.second);
+                thisObject->collidingWith = object->shared_from_this();
+                object->collidingWith = this->shared_from_this();
+            } else {
+                if (object == thisObject->collidingWith) {
+                    thisObject->collidingWith = nullptr;
+                    object->collidingWith = nullptr;
+                }
             }
         }
     }
@@ -123,4 +139,9 @@ void RenderObject::computeCollisions(std::shared_ptr<RenderObject> &o) {
 
 std::vector<std::shared_ptr<PhysicsState>> RenderObject::getPhysicState() {
     return std::vector<std::shared_ptr<PhysicsState>>({ this->physics });
+}
+
+void RenderObject::updatePhysics(const float &delta_t) {
+    this->physics->updateTimeDelta(delta_t);
+    this->physics->nextFrame();
 }

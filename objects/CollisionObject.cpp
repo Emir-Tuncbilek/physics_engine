@@ -23,8 +23,8 @@ void CollisionObject::init() {
     RenderObject::init();
 }
 
-std::vector<std::shared_ptr<RenderObject>> CollisionObject::getObjects() const {
-    std::vector<std::shared_ptr<RenderObject>> objects = { std::make_shared<CollisionObject>(*this) };
+std::vector<std::shared_ptr<RenderObject>> CollisionObject::getObjects()  {
+    std::vector<std::shared_ptr<RenderObject>> objects = { shared_from_this() };
     return objects;
 }
 
@@ -34,7 +34,7 @@ void CollisionObject::resize(const float &x, const float &y, const float &z) {
     this->zScale = z;
 }
 
-void CollisionObject::render(glm::mat4 &view, glm::mat4 &projPersp, const float &delta_t) {
+void CollisionObject::render(glm::mat4 &view, glm::mat4 &projPersp) {
     auto mvp = projPersp * view;
     glm::vec3 correctedPosition =
             glm::vec3(this->physics->getPositionOfCM()[0],

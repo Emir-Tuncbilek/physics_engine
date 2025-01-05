@@ -21,20 +21,21 @@ void FloorObject::init() {
     // this->physics->maximumRadius *= 0.01f;   // because the model is scaled to 0.01
 }
 
-std::vector<std::shared_ptr<RenderObject>> FloorObject::getObjects() const {
-    std::vector<std::shared_ptr<RenderObject>> objects = { std::make_shared<FloorObject>(*this) };
+std::vector<std::shared_ptr<RenderObject>> FloorObject::getObjects()  {
+    std::vector<std::shared_ptr<RenderObject>> objects = { shared_from_this()};
     return objects;
 }
 
-void FloorObject::render(glm::mat4 &view, glm::mat4 &projPersp, const float &delta_t) {
+void FloorObject::render(glm::mat4 &view, glm::mat4 &projPersp) {
     const PhysicsState oldState = *this->physics;
-    this->physics->resetAccelerations();    // no acceleration
+    this->physics->reset();
     auto mvp = projPersp * view;
     if (!this->context->renderCollisionMesh) {
+        this->physics->reset();
         glm::vec3 correctedPosition =
-                glm::vec3(this->physics->getPositionOfCM()[0],
-                          this->physics->getPositionOfCM()[2],
-                          -this->physics->getPositionOfCM()[1]
+                glm::vec3(this->physics->o_position[0],
+                          this->physics->o_position[2],
+                          -this->physics->o_position[1]
                 ); // Swap Y and Z, negate Z for OpenGL
         mvp = glm::translate(mvp, correctedPosition);
 
@@ -44,6 +45,7 @@ void FloorObject::render(glm::mat4 &view, glm::mat4 &projPersp, const float &del
             this->modelTexture->use();
         this->model3D->draw();
     }
+
     this->renderCollisionMesh(view, projPersp, oldState);
 }
 
