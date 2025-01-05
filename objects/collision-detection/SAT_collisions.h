@@ -9,6 +9,7 @@
 #include <array>
 #include <vector>
 #include <assert.h>
+#include <cmath>
 
 #define EVIL_CONSTANT 0x5f3759df
 
