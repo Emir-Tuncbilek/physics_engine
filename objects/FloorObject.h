@@ -17,7 +17,7 @@ public:
     ~FloorObject() = default;
 
     std::vector<std::shared_ptr<RenderObject>> getObjects() override;
-    void init() override;
+    void init(const std::shared_ptr<PhysicsState>& p) override;
     void render(glm::mat4 &view, glm::mat4 &projPersp) override;
     std::shared_ptr<RenderObject> clone() const override;
 };

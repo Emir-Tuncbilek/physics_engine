@@ -10,7 +10,7 @@
 
 class CollisionObject : public RenderObject {
 public:
-    explicit CollisionObject(const std::string& path, const std::vector<float>& position, const std::vector<float>& orientation);
+    explicit CollisionObject(const std::string& path);
 
     CollisionObject(const CollisionObject& other) = default;
 
@@ -18,7 +18,6 @@ public:
 
     std::vector<std::shared_ptr<RenderObject>> getObjects() override;
     void resize(const float& x, const float& y, const float& z) override;
-    void init() override;
     void render(glm::mat4 &view, glm::mat4 &projPersp) override;
     std::shared_ptr<RenderObject> clone() const override;
 private:

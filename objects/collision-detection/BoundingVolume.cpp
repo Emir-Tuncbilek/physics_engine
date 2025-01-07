@@ -29,40 +29,19 @@ inline std::vector<float> extractEulerAngles(const std::vector<std::vector<float
     return {roll, pitch, yaw};
 }
 
-BoundingVolume::BoundingVolume(std::vector<float> geometricCenter) : center(geometricCenter), renderObject(nullptr) {
-    this->orientation = {0.0f, 0.0f, 0.0f};
-}
+BoundingVolume::BoundingVolume() : renderObject(nullptr) {}
 
 BoundingVolume::BoundingVolume(const BoundingVolume &boundingVolume) {
-    this->center = boundingVolume.center;
-    this->orientation = boundingVolume.orientation;
     this->rotationMatrix = boundingVolume.rotationMatrix;
     this->renderObject = boundingVolume.renderObject != nullptr ? boundingVolume.renderObject->clone() : nullptr;
+    this->parentPhysics = boundingVolume.parentPhysics;
 }
 
 BoundingVolume::~BoundingVolume() = default;
 
-void BoundingVolume::applyRotationMatrix(const std::vector<float>& vec, std::vector<float>& result) const {
-    const std::vector<std::vector<float>> markedUpVec = {
-            std::vector<float>({vec[0]}), std::vector<float>({vec[1]}), std::vector<float>({vec[2]}),
-    };
-    std::vector<std::vector<float>> res;
-    for (int i = 0; i < DIMENSIONS; i ++) res.push_back(std::vector<float>({0.0f, 0.0f, 0.0f}));
-    multiplyMatrices(this->rotationMatrix, markedUpVec, res);
-    result = { res[0][0], res[1][0], res[2][0] };
-}
-
-void BoundingVolume::translate(const std::vector<float>& newPos) {
-    assert(newPos.size() == DIMENSIONS);
-    for (uint8_t i = 0; i < DIMENSIONS; i ++) this->center[i] = newPos[i];
-    this->renderObject->physics->setNewPos(this->center);
-}
-
-void BoundingVolume::setRotationMatrix(const std::vector<std::vector<float>>& rotMatrix) {
-    this->rotationMatrix = rotMatrix;
-    std::vector<float> angleDelta = extractEulerAngles(this->rotationMatrix);
-    for (uint8_t i = 0; i < DIMENSIONS; i ++) this->orientation[i] += angleDelta[i];
-    this->renderObject->physics->setNewOrientation(this->orientation);
+void BoundingVolume::setPhysics(const std::shared_ptr<PhysicsState> &p) {
+    this->parentPhysics = p;
+    this->renderObject->physics = this->parentPhysics;
 }
 
 void BoundingVolume::resize(const float &x, const float &y, const float &z) {

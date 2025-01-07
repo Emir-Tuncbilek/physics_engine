@@ -16,6 +16,7 @@
 #include <memory>
 
 #include "./BoundingVolume.h"
+#include "../../physics/physicsState.h"
 
 class CollisionMesh {
 public:
@@ -25,13 +26,15 @@ public:
     void addBoundingVolume(const std::shared_ptr<BoundingVolume>& volume);
     std::pair<bool, std::vector<float>> checkCollision(const CollisionMesh& other) const;
     std::unique_ptr<CollisionMesh> clone() const;
-    void translate(const std::vector<float>& offset);
-    void rotate(const std::vector<std::vector<float>>& rotationMatrix);
-    void rotate(const std::vector<float>& angleDiff);
+    // void translate(const std::vector<float>& offset);
+    // void rotate(const std::vector<std::vector<float>>& rotationMatrix);
+    // void rotate(const std::vector<float>& angleDiff);
     void resize(const float& x, const float& y, const float& z);
     /* cool functions */
     void render(glm::mat4 &view, glm::mat4 &projPersp);
-    void selfFit();
+    void selfFit(); // creates a "best fit" collision mesh
+public:
+    std::shared_ptr<PhysicsState> parentPhysics;
 private:
     std::vector<std::shared_ptr<BoundingVolume>> volumes;
 };

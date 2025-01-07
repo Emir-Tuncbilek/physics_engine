@@ -5,22 +5,12 @@
 #include "ParticuleObject.h"
 
 
-void ParticuleObject::init() {
-    RenderObject::init();
-    std::vector<float> zeros = { ZERO_VECTOR };
-    std::vector<float> pos = { -5.0f, 1.0f + XOffset, 0.0f + YOffset };
-    std::vector<float> velocity = { this->speed.x, this->speed.y, this->speed.z };
-    this->physics = std::make_shared<PhysicsState>(0.0f, 0.5f, 1.0f, 0.9f, 0.1f, pos, zeros, velocity, zeros);
-    this->physics->computeMaximumDistance(this->model3D->vertexData, 3);
-    this->physics->maximumRadius *= 0.01f;   // because the model is scaled to 0.01
-
+void ParticuleObject::init(const std::shared_ptr<PhysicsState>& p) {
+    RenderObject::init(p);
     // setup the bounding boxes for collision detection
-    float width  = this->physics->maximumRadius;
+    float width  = 0.02f;
     float height = width, depth = width;    // Suppose that it's in fact a cube
-    std::vector<float> position;
-    position.reserve(DIMENSIONS);
-    for (int i = 0; i < DIMENSIONS; i ++) position.push_back(this->physics->getPositionOfCM()[i]);
-    auto boundingBox = std::make_shared<BoundingBox>(position, width, depth, height);
+    auto boundingBox = std::make_shared<BoundingBox>(width, depth, height);
     boundingBox->resize(0.01f, 0.01f, 0.01f);
     this->addBoundingVolume(boundingBox);
 
@@ -33,9 +23,7 @@ std::vector<std::shared_ptr<RenderObject>> ParticuleObject::getObjects() {
 
 void ParticuleObject::render(glm::mat4 &view, glm::mat4 &projPersp) {
     const PhysicsState oldState = *this->physics;
-    this->rotateCollisionMeshToState();
-    this->translateCollisionMeshToState();
-    if (!this->context->renderCollisionMesh) {
+    if (this->context->renderObjects) {
         auto model = glm::mat4(1.0f);
         auto mvp = projPersp * view * model;
         glm::vec3 correctedPosition =

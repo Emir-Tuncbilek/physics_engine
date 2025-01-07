@@ -11,6 +11,7 @@ Scene::Scene(Resources &resources) : m_res(resources) {
     this->lastFps = 0;
     this->context = std::make_shared<SceneContext>();
     this->context->renderCollisionMesh = false;
+    this->context->renderObjects = true;
     for (auto && cluster : this->m_res.objects) cluster->setContextFromScene(this->context);
     this->state = SceneState();
 }
@@ -23,9 +24,44 @@ void Scene::addForces(const std::shared_ptr<Force> &f) {
     this->forces.push_back(f);
 }
 
+void Scene::handlePausePlay() {
+    if (this->state.pause && ImGui::Button("Play")) this->state.pause = false;
+    else if (!this->state.pause && ImGui::Button("Pause")) this->state.pause = true;
+}
+
+void Scene::handleTimeSpeed()  {
+    if (ImGui::Button("0.25x")) this->state.timeMultiplier = 0.25f;
+    ImGui::SameLine();
+    if (ImGui::Button("0.5x")) this->state.timeMultiplier = 0.5f;
+    ImGui::SameLine();
+    if (ImGui::Button("1x")) this->state.timeMultiplier = 1.0f;
+    ImGui::SameLine();
+    if (ImGui::Button("2x")) this->state.timeMultiplier = 2.0f;
+    ImGui::SameLine();
+    if (ImGui::Button("4x")) this->state.timeMultiplier = 4.0f;
+}
+
+void Scene::resetToOriginalState()  {
+    if (ImGui::Button("Reset Scene")) {
+        this->m_res.reset();
+        this->state.timeElapsed = 0.0f;
+        this->state.timeMultiplier = 1.0f;
+    }
+}
+
+void Scene::displayCollisionMesh() {
+    ImGui::Checkbox("Display Collision Mesh", (bool *) &this->context->renderCollisionMesh);
+}
+
+void Scene::displayObjects() {
+    ImGui::Checkbox("Display Objects", (bool *) &this->context->renderObjects);
+}
+
 void Scene::drawMenu() {
     ImGui::Begin("Menu");
-    ImGui::Checkbox("Display Collision Mesh", (bool *) &this->context->renderCollisionMesh);
+    this->displayCollisionMesh();
+    this->displayObjects();
+    // ImGui::Checkbox("Display Collision Mesh", (bool *) &this->context->renderCollisionMesh);
     ImGui::Text("Time Elapsed: %.3f secs", this->state.timeElapsed);
 
     this->handlePausePlay();

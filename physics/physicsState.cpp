@@ -54,7 +54,10 @@ std::pair<std::vector<float>, std::vector<float>> PhysicsState::getDifferenceInS
 
 void PhysicsState::setNewPos(const std::vector<float> &newPos) {
     assert(newPos.size() == DIMENSIONS);
-    for (uint8_t i = 0; i < DIMENSIONS; i ++) this->position[i] = newPos[i];
+    for (uint8_t i = 0; i < DIMENSIONS; i ++) {
+        this->o_position[i] = newPos[i];
+        this->position[i] = newPos[i];
+    }
 }
 
 void PhysicsState::setNewOrientation(const std::vector<float> &newOrientation) {

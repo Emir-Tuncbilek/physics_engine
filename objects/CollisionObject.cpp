@@ -4,23 +4,12 @@
 
 #include "CollisionObject.h"
 
-CollisionObject::CollisionObject(const std::string &path, const std::vector<float> &position,
-                                 const std::vector<float> &orientation) : RenderObject(path) {
+CollisionObject::CollisionObject(const std::string &path) : RenderObject(path) {
     const std::vector<float> zeros = { ZERO_VECTOR };
-    const std::vector<float> pos = {
-            position[0], position[1], position[2]
-    };
-    const std::vector<float> orient = {
-            orientation[0], orientation[1], orientation[2]
-    };
-    this->physics = std::make_shared<PhysicsState>(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, pos, orient, zeros, zeros);
+    // this->physics = std::make_shared<PhysicsState>(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, pos, orient, zeros, zeros);
     this->xScale = 1.0f;
     this->yScale = 1.0f;
     this->zScale = 1.0f;
-}
-
-void CollisionObject::init() {
-    RenderObject::init();
 }
 
 std::vector<std::shared_ptr<RenderObject>> CollisionObject::getObjects()  {

@@ -10,22 +10,17 @@
 
 class ParticuleObject : public RenderObject {
 public:
-    explicit ParticuleObject(const std::string& path, const float& xOffset, const float& yOffset) :
-            RenderObject(path), XOffset(xOffset), YOffset(yOffset), speed(glm::vec3(0.0f)) {}
+    explicit ParticuleObject(const std::string& path) :
+            RenderObject(path) {}
 
     ParticuleObject(const ParticuleObject& other) = default;
     ~ParticuleObject() = default;
 
-    void init() override;
+    void init(const std::shared_ptr<PhysicsState>& p) override;
     std::vector<std::shared_ptr<RenderObject>> getObjects() override;
     void render(glm::mat4 &view, glm::mat4 &projPersp) override;
     std::shared_ptr<RenderObject> clone() const override;
 
-public:
-    glm::vec3 speed;
-private:
-    float XOffset;
-    float YOffset;
 };
 
 #endif //PHYSICS_ENGINE_PARTICULEOBJECT_H

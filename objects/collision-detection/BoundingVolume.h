@@ -18,29 +18,26 @@
 #include <array>
 
 #include "./SAT_collisions.h"
+#include "../../physics/physicsState.h"
 
 #define DIMENSIONS 3
 #define BOUNDING_VOLUME_FRAGMENT_SHADER_PATH "../shaders/boundingVolume.fs.glsl"
 #define BOUNDING_VOLUME_VERTEX_SHADER_PATH   "../shaders/boundingVolume.vs.glsl"
+#define BOUNDING_VOLUME_GEOM_SHADER_PATH     "../shaders/boundingVolume.geom.glsl"
 
 class RenderObject;
 
-class BoundingVolume {
+class BoundingVolume : public std::enable_shared_from_this<BoundingVolume> {
 protected:
-    std::vector<float> center;
-    std::vector<float> orientation;
     std::vector<std::vector<float>> rotationMatrix;
     std::shared_ptr<RenderObject> renderObject;
 public:
-    BoundingVolume(std::vector<float> geometricCenter);
+    BoundingVolume();
     BoundingVolume(const BoundingVolume& boundingVolume);
     ~BoundingVolume();
 
-    const std::vector<float>& getGeomCenter() { return this->center; }
-    void translate(const std::vector<float>& newPos);
-    void applyRotationMatrix(const std::vector<float>& vec, std::vector<float>& result) const;
+    void setPhysics(const std::shared_ptr<PhysicsState>& p);
 
-    void setRotationMatrix(const std::vector<std::vector<float>>& rotMatrix);
     void resize(const float &x, const float &y, const float &z);
 
     virtual std::shared_ptr<BoundingVolume> clone() = 0;
@@ -50,6 +47,8 @@ public:
     virtual float getMax(const std::vector<float>& axis) const = 0;
     virtual void render(glm::mat4 &view, glm::mat4 &projPersp) const = 0;
 
+public:
+    std::shared_ptr<PhysicsState> parentPhysics;
 };
 
 

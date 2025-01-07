@@ -15,32 +15,30 @@ inline float randomFloatInRange(float minVal, float maxVal) {
 
 CloudParticuleObject::CloudParticuleObject(const CloudParticuleObject &other) : RenderObject(other) {
     this->_numParticules = other._numParticules;
-    this->_maxXDistance = other._maxXDistance;
-    this->_maxYDistance = other._maxYDistance;
-    this->_airSpeed = other._airSpeed;
     this->particuleObjectPath = other.particuleObjectPath;
     this->particules.clear();
     this->particules.reserve(this->_numParticules);
+    this->height = other.height;
+    this->width = other.width;
+    this->depth = other.depth;
     for (auto && otherParticule : other.particules) {
-        // std::shared_ptr<ParticuleObject> clone = otherParticule->clone();
         this->particules.push_back(otherParticule->clone());
     }
 }
 
-void CloudParticuleObject::init() {
+void CloudParticuleObject::init(const std::shared_ptr<PhysicsState>& p) {
     size_t totalParticles = this->_numParticules;
     size_t updateInterval = totalParticles / 100; // Update every 1% of particules loaded
-    float totalParticuleSpeed = 0.0f;
     for (size_t i = 0; i < totalParticles; i++) {
-        std::shared_ptr<ParticuleObject> o = std::make_shared<ParticuleObject>(
-                this->particuleObjectPath,
-                randomFloatInRange(-this->_maxXDistance, this->_maxXDistance),
-                randomFloatInRange(-this->_maxYDistance, this->_maxYDistance)
-        );
+        std::shared_ptr<ParticuleObject> o = std::make_shared<ParticuleObject>(this->particuleObjectPath);
         o->shaderPaths = this->shaderPaths;
-        o->speed = glm::vec3(this->_airSpeed, 0.0f, 1.0f);
-        totalParticuleSpeed += o->speed.x;
-        o->init();
+        auto particulePhysics = *p;
+        particulePhysics.setNewPos({
+            p->getPositionOfCM()[0] + randomFloatInRange(this->width.first,  this->width.second),
+            p->getPositionOfCM()[1] + randomFloatInRange(this->depth.first,  this->depth.second),
+            p->getPositionOfCM()[2] + randomFloatInRange(this->height.first, this->height.second)
+        });
+        o->init(std::make_shared<PhysicsState>(particulePhysics));
         this->particules.push_back(std::move(o));
 
         if (i % updateInterval == 0 || i == totalParticles - 1) {
@@ -48,10 +46,8 @@ void CloudParticuleObject::init() {
             std::cout << "Loading: " << progress << "%\r" << std::flush;
         }
     }
-    const std::vector<float> zeros = { ZERO_VECTOR };
-    const std::vector<float> pos = { -5.0f, 1.0f, 0.0f };
-    const std::vector<float> velocity = { totalParticuleSpeed/(float)totalParticles, 0.0f, 1.0f };         // the velocity of the cloud is simply the average speed of all the particules
-    this->physics = std::make_shared<PhysicsState>(0.0f, 1.0f, 0.0f, 0.0f, 0.0f, pos, zeros, velocity, zeros);  // helps picture the cloud of particules as a single rigid body
+
+    RenderObject::init(p);
     std::cout << "Loading: 100% complete!" << std::endl;
 }
 

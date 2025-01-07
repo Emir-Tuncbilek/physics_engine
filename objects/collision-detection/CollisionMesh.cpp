@@ -5,6 +5,8 @@
 #include "CollisionMesh.h"
 
 void CollisionMesh::addBoundingVolume(const std::shared_ptr<BoundingVolume>& volume) {
+    volume->parentPhysics = this->parentPhysics;
+    volume->setPhysics(this->parentPhysics);
     this->volumes.push_back(volume);
 }
 
@@ -28,9 +30,11 @@ std::unique_ptr<CollisionMesh> CollisionMesh::clone() const {
     return std::move(cm);
 }
 
+/*
 void CollisionMesh::translate(const std::vector<float>& translationMatrix) {
     for (auto && volume : this->volumes) volume->translate(translationMatrix);
 }
+
 
 void CollisionMesh::rotate(const std::vector<std::vector<float>>& rotationMatrix) {
     for (auto && volume : this->volumes) volume->setRotationMatrix(rotationMatrix);
@@ -45,6 +49,7 @@ void CollisionMesh::rotate(const std::vector<float> &angleDiff) {
     };
     this->rotate(rotMatrix);
 }
+  */
 
 void CollisionMesh::resize(const float &x, const float &y, const float &z) {
     for (auto&& volume : this->volumes) volume->resize(x, y, z);

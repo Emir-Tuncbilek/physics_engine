@@ -7,6 +7,7 @@
 
 struct SceneContext {
     bool renderCollisionMesh;
+    bool renderObjects;
 };
 
 #endif //PHYSICS_ENGINE_SCENECONTEXT_H

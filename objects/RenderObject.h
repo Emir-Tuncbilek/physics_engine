@@ -46,9 +46,9 @@ public:
     void computeCollisions(std::shared_ptr<RenderObject>& o);
     void addBoundingVolume(const std::shared_ptr<BoundingVolume>& volume);
     virtual void updatePhysics(const float& delta_t);
-    virtual void init();
-    virtual void translateCollisionMeshToState();
-    virtual void rotateCollisionMeshToState();
+    virtual void init(const std::shared_ptr<PhysicsState>& p);
+    // virtual void translateCollisionMeshToState();
+    // virtual void rotateCollisionMeshToState();
     virtual void setContextFromScene(const std::shared_ptr<SceneContext>& sceneContext);
     virtual void renderCollisionMesh(glm::mat4 &view, glm::mat4 &projPersp, const PhysicsState& oldState);
 

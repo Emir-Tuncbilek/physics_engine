@@ -26,7 +26,7 @@ private:
     float height;   // z
 
 public:
-    BoundingBox(const std::vector<float>& center, const float& width, const float& depth, const float& height);
+    BoundingBox(const float& width, const float& depth, const float& height);
     BoundingBox(const BoundingBox& boundingBox) = default;
     ~BoundingBox() = default;
 

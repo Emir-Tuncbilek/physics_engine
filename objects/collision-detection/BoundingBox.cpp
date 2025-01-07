@@ -5,17 +5,17 @@
 #include "BoundingBox.h"
 #include "../CollisionObject.h"
 
-BoundingBox::BoundingBox(const std::vector<float>& center, const float &width, const float &depth, const float &height) :
-    BoundingVolume(center), width(width), depth(depth), height(height) {
-    const std::vector<float> orientation = { ZERO_VECTOR }; // make this a parameter in the future
-    this->renderObject = std::make_shared<CollisionObject>(BOX_OBJECT_FILE_PATH, center, orientation);
+BoundingBox::BoundingBox(const float &width, const float &depth, const float &height) :
+    BoundingVolume(), width(width), depth(depth), height(height) {
+    this->renderObject = std::make_shared<CollisionObject>(BOX_OBJECT_FILE_PATH);
     this->renderObject->shaderPaths.emplace_back(BOUNDING_VOLUME_VERTEX_SHADER_PATH, GL_VERTEX_SHADER);
+    this->renderObject->shaderPaths.emplace_back(BOUNDING_VOLUME_GEOM_SHADER_PATH, GL_GEOMETRY_SHADER);
     this->renderObject->shaderPaths.emplace_back(BOUNDING_VOLUME_FRAGMENT_SHADER_PATH, GL_FRAGMENT_SHADER);
-    this->renderObject->init();
+    this->renderObject->init(this->parentPhysics);
 }
 
 std::pair<bool, std::vector<float>> BoundingBox::isCollidingWith(std::shared_ptr<BoundingVolume> boundingVolume) {
-    std::shared_ptr<BoundingBox> object = std::make_shared<BoundingBox>(*this);
+    auto object = this->shared_from_this();
     auto resultThis = this->testNormals(boundingVolume);
     if (resultThis.first) return resultThis;
     auto resultOther = boundingVolume->testNormals(object);
@@ -50,7 +50,7 @@ std::pair<bool, std::vector<float>> BoundingBox::testNormals(std::shared_ptr<Bou
     }
     std::vector<float> collisionNormal;
     for (uint8_t i = 0; i < DIMENSIONS; i ++) {
-        collisionNormal.push_back(boundingVolume->getGeomCenter()[i] - this->center[i]);
+        collisionNormal.push_back(boundingVolume->parentPhysics->getPositionOfCM()[i] - this->parentPhysics->getPositionOfCM()[i]);
     }
     normalize(collisionNormal);
     return { true, BoundingBox::findBestNormal(collisionNormal) };
@@ -76,16 +76,15 @@ float BoundingBox::getPositionOf(const std::vector<float>& axis, const std::func
             { -width * 0.5f, -depth * 0.5f, -height * 0.5f }
     };
     std::vector<float> vertex = {
-            vertices[0][0] + this->center[0],
-            vertices[0][1] + this->center[1],
-            vertices[0][2] + this->center[2]
+            vertices[0][0] + this->parentPhysics->getPositionOfCM()[0],
+            vertices[0][1] + this->parentPhysics->getPositionOfCM()[1],
+            vertices[0][2] + this->parentPhysics->getPositionOfCM()[2]
     };
     float projection = dotProduct(vertex, axis, DIMENSIONS);
     for (uint8_t i = 1; i < NUM_VERTICES; i ++) {
-        vertex[0] = vertices[i][0] + this->center[0];
-        vertex[1] = vertices[i][1] + this->center[1];
-        vertex[2] = vertices[i][2] + this->center[2];
-        // this->applyRotationMatrix(vertex, vertex);
+        vertex[0] = vertices[i][0] + this->parentPhysics->getPositionOfCM()[0];
+        vertex[1] = vertices[i][1] + this->parentPhysics->getPositionOfCM()[1];
+        vertex[2] = vertices[i][2] + this->parentPhysics->getPositionOfCM()[2];
         float currentProjection = dotProduct(vertex, axis, DIMENSIONS);
         if (comparator(currentProjection, projection)) projection = currentProjection;
     }
@@ -93,8 +92,6 @@ float BoundingBox::getPositionOf(const std::vector<float>& axis, const std::func
 }
 
 void BoundingBox::render(glm::mat4 &view, glm::mat4 &projPersp) const {
-    this->renderObject->physics->setNewPos(this->center);
-    this->renderObject->physics->setNewOrientation(this->orientation);
     this->renderObject->render(view, projPersp);
 }
 

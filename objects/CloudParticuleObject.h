@@ -12,21 +12,24 @@ class CloudParticuleObject : public RenderObject {
 public:
     explicit CloudParticuleObject(const std::string& path,
                                   size_t numParticules,
-                                  float maxXDistance,
-                                  float maxYDistance,
-                                  float airSpeed) :
+                                  std::pair<float, float> maxWidth, // x
+                                  std::pair<float, float> maxDepth, // y
+                                  std::pair<float, float> maxHeight // z
+                                  ):
             RenderObject(),
             particuleObjectPath(path),
             _numParticules(numParticules),
-            _maxXDistance(maxXDistance),
-            _maxYDistance(maxYDistance),
-            _airSpeed(airSpeed) {}
+            height(maxHeight), width(maxWidth), depth(maxDepth) {
+        assert(this->width.first  <= this->width.second);
+        assert(this->height.first <= this->height.second);
+        assert(this->depth.first  <= this->depth.second);
+    }
 
     CloudParticuleObject(const CloudParticuleObject& other);
 
     ~CloudParticuleObject() = default;
 
-    void init() override;
+    void init(const std::shared_ptr<PhysicsState>& p) override;
 
     void reset() override;
 
@@ -45,10 +48,8 @@ public:
 private:
     std::string particuleObjectPath;
     size_t _numParticules;
+    std::pair<float, float> height, width, depth;
     std::vector<std::shared_ptr<RenderObject>> particules;
-    float _maxXDistance;
-    float _maxYDistance;
-    float _airSpeed;
 };
 
 

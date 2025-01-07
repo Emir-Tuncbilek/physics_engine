@@ -14,7 +14,7 @@ class BoundingSphere : public BoundingVolume {
 private:
     float radius;
 public:
-    BoundingSphere(const std::vector<float>& center, float radius);
+    BoundingSphere(const float& radius);
     BoundingSphere(const BoundingSphere& boundingSphere) = default;
     ~BoundingSphere() = default;
 

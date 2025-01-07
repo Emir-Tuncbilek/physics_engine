@@ -4,7 +4,7 @@
 
 #include "BoundingSphere.h"
 
-BoundingSphere::BoundingSphere(const std::vector<float>& center, float radius) : BoundingVolume(center), radius(radius) {}
+BoundingSphere::BoundingSphere(const float& radius) : BoundingVolume(), radius(radius) {}
 
 std::shared_ptr<BoundingVolume> BoundingSphere::clone() {
     auto sphere = std::make_shared<BoundingSphere>(*this);
@@ -12,7 +12,7 @@ std::shared_ptr<BoundingVolume> BoundingSphere::clone() {
 }
 
 std::pair<bool, std::vector<float>> BoundingSphere::isCollidingWith(std::shared_ptr<BoundingVolume> boundingVolume) {
-    std::shared_ptr<BoundingSphere> object = std::make_shared<BoundingSphere>(*this);
+    auto object = this->shared_from_this();
     auto resultThis = this->testNormals(boundingVolume);
     if (resultThis.first) return resultThis;
     auto resultOther = boundingVolume->testNormals(object);
@@ -30,9 +30,9 @@ std::pair<bool, std::vector<float>> BoundingSphere::testNormals(std::shared_ptr<
     // we must hope that the second object returns true when checking its normals.
 
     std::vector<float> normalVec = {
-            boundingVolume->getGeomCenter()[0] - this->center[0],
-            boundingVolume->getGeomCenter()[1] - this->center[1],
-            boundingVolume->getGeomCenter()[2] - this->center[2]
+            boundingVolume->parentPhysics->getPositionOfCM()[0] - this->parentPhysics->getPositionOfCM()[0],
+            boundingVolume->parentPhysics->getPositionOfCM()[1] - this->parentPhysics->getPositionOfCM()[1],
+            boundingVolume->parentPhysics->getPositionOfCM()[2] - this->parentPhysics->getPositionOfCM()[2]
     };
 
     // normalize the normal vector
@@ -50,12 +50,12 @@ std::pair<bool, std::vector<float>> BoundingSphere::testNormals(std::shared_ptr<
 
 float BoundingSphere::getMin(const std::vector<float>& axis) const {
     // Project the center onto the axis and subtract the radius to get the minimum projection
-    return dotProduct(this->center, axis, DIMENSIONS) - this->radius;
+    return dotProduct(this->parentPhysics->getPositionOfCM(), axis, DIMENSIONS) - this->radius;
 }
 
 float BoundingSphere::getMax(const std::vector<float>& axis) const {
     // Project the center onto the axis and add the radius to get the maximum projection
-    return dotProduct(this->center, axis, DIMENSIONS) + this->radius;
+    return dotProduct(this->parentPhysics->getPositionOfCM(), axis, DIMENSIONS) + this->radius;
 }
 
 void BoundingSphere::render(glm::mat4 &view, glm::mat4 &projPersp) const {

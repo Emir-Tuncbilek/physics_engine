@@ -82,6 +82,7 @@ public:
     float getMomentOfInertia() const { return this->momentOfInertia; }
     std::vector<float> getPositionOfCM() const { return this->position; }
     std::vector<float> getOrientation() const { return this->orientation; }
+    std::vector<float> getVelocityOfCM() const { return this->velocity; }
 
     bool isImmobile(PhysicsState& p);
 
