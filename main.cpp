@@ -23,8 +23,8 @@
 #define CAMERA_SPEED 0.01f
 #define VIEW_ANGLE 70.0f
 #define CAMERA_DISTANCE 5.0f
-#define MIN_DISTANCE_VIEW 0.1f
-#define MAX_DISTANCE_VIEW 200.0f
+#define MIN_DISTANCE_VIEW 0.5f
+#define MAX_DISTANCE_VIEW 400.0f
 
 /* Scene constants */
 // Car
@@ -150,7 +150,7 @@ void buildScene(Resources& resources) {
                                  floorVelocity,
                                  floorAngVelocity);
 
-    std::shared_ptr<F1Object> car = std::make_shared<F1Object>("../3DObjects/sphere.obj");
+    std::shared_ptr<F1Object> car = std::make_shared<F1Object>("../3DObjects/cube.obj");
     car->shaderPaths.emplace_back("../shaders/f1CarShader.vs.glsl", GL_VERTEX_SHADER);
     car->shaderPaths.emplace_back("../shaders/f1CarShader.fs.glsl", GL_FRAGMENT_SHADER);
     car->init(carState);
@@ -166,7 +166,7 @@ void buildScene(Resources& resources) {
     particuleCloud->shaderPaths.emplace_back("../shaders/particule.vs.glsl", GL_VERTEX_SHADER);
     particuleCloud->shaderPaths.emplace_back("../shaders/particule.fs.glsl", GL_FRAGMENT_SHADER);
     particuleCloud->init(particuleState);
-    // resources.addObject(particuleCloud);
+    resources.addObject(particuleCloud);
 
     std::shared_ptr<FloorObject> floor = std::make_shared<FloorObject>("../3DObjects/cube.obj");
     floor->shaderPaths.emplace_back("../shaders/floor.vs.glsl", GL_VERTEX_SHADER);

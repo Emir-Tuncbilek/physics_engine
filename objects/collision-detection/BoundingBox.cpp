@@ -19,7 +19,7 @@ std::pair<bool, std::vector<float>> BoundingBox::isCollidingWith(std::shared_ptr
     auto resultThis = this->testNormals(boundingVolume);
     if (resultThis.first) return resultThis;
     auto resultOther = boundingVolume->testNormals(object);
-    if (resultOther.first) return resultOther;
+    if (resultOther.first) return { true, {-resultOther.second[0], -resultOther.second[1], -resultOther.second[2]} };
     return { false, {} };
 }
 
