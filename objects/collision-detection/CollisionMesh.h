@@ -26,9 +26,7 @@ public:
     void addBoundingVolume(const std::shared_ptr<BoundingVolume>& volume);
     std::pair<bool, std::vector<float>> checkCollision(const CollisionMesh& other) const;
     std::unique_ptr<CollisionMesh> clone() const;
-    // void translate(const std::vector<float>& offset);
-    // void rotate(const std::vector<std::vector<float>>& rotationMatrix);
-    // void rotate(const std::vector<float>& angleDiff);
+    void nudgeCollisionMesh(const std::vector<float>& offset);
     void resize(const float& x, const float& y, const float& z);
     /* cool functions */
     void render(glm::mat4 &view, glm::mat4 &projPersp);

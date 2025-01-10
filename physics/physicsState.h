@@ -60,6 +60,7 @@ public:
      */
     static std::pair<std::vector<float>, std::vector<float>> getDifferenceInStates(const PhysicsState& p1, const PhysicsState& p2);
 
+    void incrementPositionBy(const std::vector<float>& positionChange);
 
     void computeMaximumDistance(std::vector<float>& vertices, int offset);
 

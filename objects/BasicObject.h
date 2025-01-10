@@ -2,19 +2,19 @@
 // Created by Emir Tuncbilek on 12/21/24.
 //
 
-#ifndef PHYSICS_ENGINE_F1OBJECT_H
-#define PHYSICS_ENGINE_F1OBJECT_H
+#ifndef PHYSICS_ENGINE_BASICOBJECT_H
+#define PHYSICS_ENGINE_BASICOBJECT_H
 
 #include "RenderObject.h"
 #include "./collision-detection/BoundingBox.h"
 
-class F1Object : public RenderObject {
+class BasicObject : public RenderObject {
 public:
-    explicit F1Object(const std::string& path) : RenderObject(path) {}
+    explicit BasicObject(const std::string& path) : RenderObject(path) {}
 
-    F1Object(const F1Object& other) = default;
+    BasicObject(const BasicObject& other) = default;
 
-    ~F1Object() = default;
+    ~BasicObject() = default;
 
     void init(const std::shared_ptr<PhysicsState>& p) override;
     std::vector<std::shared_ptr<RenderObject>> getObjects() override;
@@ -23,4 +23,4 @@ public:
 };
 
 
-#endif //PHYSICS_ENGINE_F1OBJECT_H
+#endif //PHYSICS_ENGINE_BASICOBJECT_H

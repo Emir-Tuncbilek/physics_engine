@@ -30,26 +30,9 @@ std::unique_ptr<CollisionMesh> CollisionMesh::clone() const {
     return std::move(cm);
 }
 
-/*
-void CollisionMesh::translate(const std::vector<float>& translationMatrix) {
-    for (auto && volume : this->volumes) volume->translate(translationMatrix);
+void CollisionMesh::nudgeCollisionMesh(const std::vector<float> &offset) {
+    for (auto&& volume : this->volumes) volume->nudge(offset);
 }
-
-
-void CollisionMesh::rotate(const std::vector<std::vector<float>>& rotationMatrix) {
-    for (auto && volume : this->volumes) volume->setRotationMatrix(rotationMatrix);
-}
-
-void CollisionMesh::rotate(const std::vector<float> &angleDiff) {
-    assert(angleDiff.size() == DIMENSIONS);
-    std::vector<std::vector<float>> rotMatrix = {
-            { 1.0f, 0.0f, 0.0f },
-            { 0.0f, 1.0f, 0.0f },
-            { 0.0f, 0.0f, 1.0f }
-    };
-    this->rotate(rotMatrix);
-}
-  */
 
 void CollisionMesh::resize(const float &x, const float &y, const float &z) {
     for (auto&& volume : this->volumes) volume->resize(x, y, z);

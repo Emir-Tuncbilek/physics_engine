@@ -44,6 +44,11 @@ void BoundingVolume::setPhysics(const std::shared_ptr<PhysicsState> &p) {
     this->renderObject->physics = this->parentPhysics;
 }
 
+void BoundingVolume::nudge(const std::vector<float>& offset) {
+    this->_offset = offset;
+    this->renderObject->renderOffset = this->_offset;
+}
+
 void BoundingVolume::resize(const float &x, const float &y, const float &z) {
     this->renderObject->resize(x, y, z);
 }

@@ -60,6 +60,11 @@ void PhysicsState::setNewPos(const std::vector<float> &newPos) {
     }
 }
 
+void PhysicsState::incrementPositionBy(const std::vector<float> &positionChange) {
+    assert(positionChange.size() == DIMENSIONS);
+    for (uint8_t i = 0; i < DIMENSIONS; i ++) this->position[i] += positionChange[i];
+}
+
 void PhysicsState::setNewOrientation(const std::vector<float> &newOrientation) {
     assert(newOrientation.size() == DIMENSIONS);
     for (uint8_t i = 0; i < DIMENSIONS; i ++) this->orientation[i] = newOrientation[i];

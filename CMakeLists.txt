@@ -33,7 +33,6 @@ add_executable(physics_engine
         graphics/public-libs/obj_loader.h
         graphics/shaderProgram.cpp graphics/shaderProgram.h
         graphics/window.cpp graphics/window.h
-        graphics/textures.cpp graphics/textures.h
         graphics/scene.cpp graphics/scene.h
         graphics/camera.cpp graphics/camera.h
         graphics/Resources.cpp graphics/Resources.h
@@ -43,7 +42,7 @@ add_executable(physics_engine
         physics/physicsState.h physics/physicsState.cpp
         physics/forces.cpp physics/forces.h
         objects/FloorObject.cpp objects/FloorObject.h
-        objects/F1Object.cpp objects/F1Object.h
+        objects/BasicObject.cpp objects/BasicObject.h
         objects/ParticuleObject.cpp objects/ParticuleObject.h
         objects/CloudParticuleObject.cpp objects/CloudParticuleObject.h
         objects/collision-detection/BoundingVolume.cpp objects/collision-detection/BoundingVolume.h
@@ -52,7 +51,7 @@ add_executable(physics_engine
         objects/collision-detection/CollisionMesh.cpp objects/collision-detection/CollisionMesh.h
         objects/collision-detection/SAT_collisions.cpp objects/collision-detection/SAT_collisions.h
         graphics/sceneContext.h
-        objects/CollisionObject.cpp objects/CollisionObject.h)
+        objects/CollisionObject.cpp objects/CollisionObject.h graphics/Texture2D.cpp graphics/Texture2D.h)
 
 # Include Dear ImGui
 set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/external/imgui)

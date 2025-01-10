@@ -22,6 +22,7 @@ RenderObject::RenderObject() {
     this->physics = nullptr;
     this->collisionMesh = std::make_unique<CollisionMesh>();
     this->lastComputedNormal = {};
+    this->renderOffset = {};
 }
 
 RenderObject::RenderObject(const std::string& modelPath) {
@@ -35,6 +36,7 @@ RenderObject::RenderObject(const std::string& modelPath) {
     this->collisionMesh = std::make_unique<CollisionMesh>();
     this->collidingWith = nullptr;
     this->lastComputedNormal = {};
+    this->renderOffset = {};
 }
 
 RenderObject::RenderObject(const RenderObject& other) {
@@ -48,6 +50,7 @@ RenderObject::RenderObject(const RenderObject& other) {
     this->collisionMesh = other.collisionMesh->clone();
     this->collidingWith = other.collidingWith;
     this->lastComputedNormal = other.lastComputedNormal;
+    this->renderOffset = other.renderOffset;
 }
 
 void RenderObject::setContextFromScene(const std::shared_ptr<SceneContext>& sceneContext) {
@@ -69,6 +72,7 @@ void RenderObject::init(const std::shared_ptr<PhysicsState>& p) {
         this->modelShaderProgram->attachShader(s);
     }
     this->physics = p;
+    this->renderOffset = {};
     this->collisionMesh->parentPhysics = this->physics;
     this->modelShaderProgram->link();
     this->mvpModelLocation = this->modelShaderProgram->getUniformLoc("U_MVP");
@@ -82,7 +86,15 @@ void RenderObject::reset() {
     this->physics->reset();
 }
 
-void RenderObject::resize(const float &x, const float &y, const float &z) { /* Do Nothing */ }
+void RenderObject::resize(const float &x, const float &y, const float &z) { }
+
+void RenderObject::collisionMeshScale(const float &x, const float &y, const float &z) {
+    this->collisionMesh->resize(x, y, z);
+}
+
+void RenderObject::nudgeCollisionMesh(const std::vector<float> &offset) {
+    this->collisionMesh->nudgeCollisionMesh(offset);
+}
 
 void RenderObject::addBoundingVolume(const std::shared_ptr<BoundingVolume> &volume) {
     this->collisionMesh->addBoundingVolume(volume);

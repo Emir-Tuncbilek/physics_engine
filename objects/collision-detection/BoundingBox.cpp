@@ -66,25 +66,26 @@ float BoundingBox::getMax(const std::vector<float>& axis) const  {
 
 float BoundingBox::getPositionOf(const std::vector<float>& axis, const std::function<bool(float, float)> &comparator) const {
     float vertices[NUM_VERTICES][DIMENSIONS] = {
-            {  width * 0.5f,  depth * 0.5f,  height * 0.5f },
-            {  width * 0.5f,  depth * 0.5f, -height * 0.5f },
-            {  width * 0.5f, -depth * 0.5f,  height * 0.5f },
-            {  width * 0.5f, -depth * 0.5f, -height * 0.5f },
-            { -width * 0.5f,  depth * 0.5f,  height * 0.5f },
-            { -width * 0.5f,  depth * 0.5f, -height * 0.5f },
-            { -width * 0.5f, -depth * 0.5f,  height * 0.5f },
-            { -width * 0.5f, -depth * 0.5f, -height * 0.5f }
+            {  this->width * 0.5f,  this->depth * 0.5f,  this->height * 0.5f },
+            {  this->width * 0.5f,  this->depth * 0.5f, -this->height * 0.5f },
+            {  this->width * 0.5f, -this->depth * 0.5f,  this->height * 0.5f },
+            {  this->width * 0.5f, -this->depth * 0.5f, -this->height * 0.5f },
+            { -this->width * 0.5f,  this->depth * 0.5f,  this->height * 0.5f },
+            { -this->width * 0.5f,  this->depth * 0.5f, -this->height * 0.5f },
+            { -this->width * 0.5f, -this->depth * 0.5f,  this->height * 0.5f },
+            { -this->width * 0.5f, -this->depth * 0.5f, -this->height * 0.5f }
     };
+    bool isOffset = !this->_offset.empty();
     std::vector<float> vertex = {
-            vertices[0][0] + this->parentPhysics->getPositionOfCM()[0],
-            vertices[0][1] + this->parentPhysics->getPositionOfCM()[1],
-            vertices[0][2] + this->parentPhysics->getPositionOfCM()[2]
+            vertices[0][0] + this->parentPhysics->getPositionOfCM()[0] + (isOffset ? this->_offset[0] : 0.0f),
+            vertices[0][1] + this->parentPhysics->getPositionOfCM()[1] + (isOffset ? this->_offset[1] : 0.0f),
+            vertices[0][2] + this->parentPhysics->getPositionOfCM()[2] + (isOffset ? this->_offset[2] : 0.0f)
     };
     float projection = dotProduct(vertex, axis, DIMENSIONS);
     for (uint8_t i = 1; i < NUM_VERTICES; i ++) {
-        vertex[0] = vertices[i][0] + this->parentPhysics->getPositionOfCM()[0];
-        vertex[1] = vertices[i][1] + this->parentPhysics->getPositionOfCM()[1];
-        vertex[2] = vertices[i][2] + this->parentPhysics->getPositionOfCM()[2];
+        vertex[0] = vertices[i][0] + this->parentPhysics->getPositionOfCM()[0] + (isOffset ? this->_offset[0] : 0.0f);
+        vertex[1] = vertices[i][1] + this->parentPhysics->getPositionOfCM()[1] + (isOffset ? this->_offset[1] : 0.0f);
+        vertex[2] = vertices[i][2] + this->parentPhysics->getPositionOfCM()[2] + (isOffset ? this->_offset[2] : 0.0f);
         float currentProjection = dotProduct(vertex, axis, DIMENSIONS);
         if (comparator(currentProjection, projection)) projection = currentProjection;
     }
@@ -93,6 +94,13 @@ float BoundingBox::getPositionOf(const std::vector<float>& axis, const std::func
 
 void BoundingBox::render(glm::mat4 &view, glm::mat4 &projPersp) const {
     this->renderObject->render(view, projPersp);
+}
+
+void BoundingBox::resize(const float &x, const float &y, const float &z) {
+    this->width  *= x;
+    this->depth  *= y;
+    this->height *= z;
+    BoundingVolume::resize(x, y, z);
 }
 
 std::vector<float> BoundingBox::findBestNormal(const std::vector<float>& normal) {

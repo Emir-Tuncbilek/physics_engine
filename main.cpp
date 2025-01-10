@@ -8,7 +8,7 @@
 #include "graphics/scene.h"
 #include "graphics/Resources.h"
 
-#include "objects/F1Object.h"
+#include "objects/BasicObject.h"
 #include "objects/FloorObject.h"
 #include "objects/CloudParticuleObject.h"
 
@@ -23,15 +23,15 @@
 #define CAMERA_SPEED 0.01f
 #define VIEW_ANGLE 70.0f
 #define CAMERA_DISTANCE 5.0f
-#define MIN_DISTANCE_VIEW 0.5f
+#define MIN_DISTANCE_VIEW 0.01f
 #define MAX_DISTANCE_VIEW 400.0f
 
 /* Scene constants */
 // Car
-#define CAR_MASS_KG 100.0f
-#define CAR_MOMENT_OF_INERTIA 0.0f  /* For now, inertia is not implemented */
-#define CAR_ELASITICITY 0.9f
-#define CAR_FRICTION_COEFFICIENT 0.0f /* For now, friction is not implemented */
+#define SU57_MASS_KG 100.0f
+#define SU57_MOMENT_OF_INERTIA 0.0f  /* For now, inertia is not implemented */
+#define SU57_ELASITICITY 0.3f
+#define SU57_FRICTION_COEFFICIENT 0.0f /* For now, friction is not implemented */
 
 // Floor
 #define FLOOR_MASS_KG std::numeric_limits<float>::infinity()
@@ -105,20 +105,20 @@ int main() {
 void buildScene(Resources& resources) {
     const float delta_t = 0.0f;
 
-    // Car state
-    const std::vector<float> carPos = { 0.0, 0.0f, 1.0f };
-    const std::vector<float> carOrientation = { M_PI/2, M_PI, M_PI/2 };    // 90˚, 180˚, 90˚
-    const std::vector<float> carVelocity = { ZERO_VECTOR };
-    const std::vector<float> carAngVelocity = { ZERO_VECTOR };
-    auto carState = std::make_shared<PhysicsState>(delta_t,
-                           CAR_MASS_KG,
-                           CAR_MOMENT_OF_INERTIA,
-                           CAR_ELASITICITY,
-                           CAR_FRICTION_COEFFICIENT,
-                           carPos,
-                           carOrientation,
-                           carVelocity,
-                           carAngVelocity);
+    // su57 state
+    const std::vector<float> su57Pos = { 0.0, 0.0f, 1.0f };
+    const std::vector<float> su57Orientation = { ZERO_VECTOR };
+    const std::vector<float> su57Velocity = { ZERO_VECTOR };
+    const std::vector<float> su57AngVelocity = { ZERO_VECTOR };
+    auto su57State = std::make_shared<PhysicsState>(delta_t,
+                           SU57_MASS_KG,
+                           SU57_MOMENT_OF_INERTIA,
+                           SU57_ELASITICITY,
+                           SU57_FRICTION_COEFFICIENT,
+                           su57Pos,
+                           su57Orientation,
+                           su57Velocity,
+                           su57AngVelocity);
 
     // Particule states
     const std::vector<float> particulePos = { -5.0, 1.0f, 0.0f };
@@ -150,23 +150,28 @@ void buildScene(Resources& resources) {
                                  floorVelocity,
                                  floorAngVelocity);
 
-    std::shared_ptr<F1Object> car = std::make_shared<F1Object>("../3DObjects/cube.obj");
-    car->shaderPaths.emplace_back("../shaders/f1CarShader.vs.glsl", GL_VERTEX_SHADER);
-    car->shaderPaths.emplace_back("../shaders/f1CarShader.fs.glsl", GL_FRAGMENT_SHADER);
-    car->init(carState);
-    resources.addObject(car);
+    std::shared_ptr<BasicObject> su57 = std::make_shared<BasicObject>("../3DObjects/su57.obj");
+    su57->shaderPaths.emplace_back("../shaders/objectShader.vs.glsl", GL_VERTEX_SHADER);
+    su57->shaderPaths.emplace_back("../shaders/objectShader.fs.glsl", GL_FRAGMENT_SHADER);
+    su57->modelTexture = std::make_shared<Texture2D>("../textures/su57_texture.png");
+    su57->init(su57State);
+    su57->collisionMeshScale(0.7f, 0.95f, 0.2f);
+    su57->nudgeCollisionMesh({0.0f, 0.15f, 0.2f});
+    resources.addObject(su57);
 
+    /*
     std::shared_ptr<CloudParticuleObject> particuleCloud = std::make_shared<CloudParticuleObject>(
             "../3DObjects/cube.obj",
             NUM_PARTICULES,
             std::pair<float, float> ({ -CLOUD_WIDTH, CLOUD_WIDTH }),
             std::pair<float, float> ({ -CLOUD_HEIGHT, CLOUD_HEIGHT }),
-            std::pair<float, float> ({ -CLOUD_DEPTH, CLOUD_DEPTH}) );
+            std::pair<float, float> ({ -CLOUD_DEPTH, CLOUD_DEPTH}));
 
     particuleCloud->shaderPaths.emplace_back("../shaders/particule.vs.glsl", GL_VERTEX_SHADER);
     particuleCloud->shaderPaths.emplace_back("../shaders/particule.fs.glsl", GL_FRAGMENT_SHADER);
     particuleCloud->init(particuleState);
     resources.addObject(particuleCloud);
+     */
 
     std::shared_ptr<FloorObject> floor = std::make_shared<FloorObject>("../3DObjects/cube.obj");
     floor->shaderPaths.emplace_back("../shaders/floor.vs.glsl", GL_VERTEX_SHADER);

@@ -30,11 +30,13 @@ void CollisionObject::render(glm::mat4 &view, glm::mat4 &projPersp) {
                       this->physics->getPositionOfCM()[2],
                       -this->physics->getPositionOfCM()[1]
             ); // Swap Y and Z, negate Z for OpenGL
+    if (!this->renderOffset.empty())
+        correctedPosition += glm::vec3(this->renderOffset[0], this->renderOffset[2], -this->renderOffset[1]);
     mvp = glm::translate(mvp, correctedPosition);
     mvp = glm::rotate(mvp, this->physics->getOrientation()[0], glm::vec3(1.0f, 0.0f, 0.0f));
     mvp = glm::rotate(mvp, this->physics->getOrientation()[1], glm::vec3(0.0f, 1.0f, 0.0f));
     mvp = glm::rotate(mvp, this->physics->getOrientation()[2], glm::vec3(0.0f, 1.0f, 0.0f));
-    mvp = glm::scale(mvp, glm::vec3(this->xScale, this->yScale, this->zScale));
+    mvp = glm::scale(mvp, glm::vec3(this->xScale, this->zScale, this->yScale));
 
     this->modelShaderProgram->use();
     glUniformMatrix4fv(this->mvpModelLocation, 1, GL_FALSE, &mvp[0][0]);

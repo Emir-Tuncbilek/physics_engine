@@ -36,6 +36,7 @@ public:
     float getMax(const std::vector<float>& axis) const override;
     float getMin(const std::vector<float>& axis) const override;
     void render(glm::mat4 &view, glm::mat4 &projPersp) const override;
+    void resize(const float &x, const float &y, const float &z) override;
 
 private:
     float getPositionOf(const std::vector<float>& axis, const std::function<bool(float, float)>& comparator) const;

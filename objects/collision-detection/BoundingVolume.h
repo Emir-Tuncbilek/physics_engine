@@ -31,6 +31,7 @@ class BoundingVolume : public std::enable_shared_from_this<BoundingVolume> {
 protected:
     std::vector<std::vector<float>> rotationMatrix;
     std::shared_ptr<RenderObject> renderObject;
+    std::vector<float> _offset;
 public:
     BoundingVolume();
     BoundingVolume(const BoundingVolume& boundingVolume);
@@ -38,7 +39,8 @@ public:
 
     void setPhysics(const std::shared_ptr<PhysicsState>& p);
 
-    void resize(const float &x, const float &y, const float &z);
+    virtual void resize(const float &x, const float &y, const float &z);
+    virtual void nudge(const std::vector<float>& offset);
 
     virtual std::shared_ptr<BoundingVolume> clone() = 0;
     virtual std::pair<bool, std::vector<float>> isCollidingWith(std::shared_ptr<BoundingVolume> boundingVolume) = 0;

@@ -19,9 +19,9 @@
 #include <cmath>
 
 #include "../graphics/models.h"
-#include "../graphics/textures.h"
 #include "../graphics/shaderProgram.h"
 #include "../graphics/sceneContext.h"
+#include "../graphics/Texture2D.h"
 #include "../physics/physicsState.h"
 #include "./collision-detection/CollisionMesh.h"
 
@@ -41,14 +41,15 @@ public:
 
     ~RenderObject() = default;
 
-    virtual void reset();
-    virtual void resize(const float &x, const float &y, const float &z);
     void computeCollisions(std::shared_ptr<RenderObject>& o);
     void addBoundingVolume(const std::shared_ptr<BoundingVolume>& volume);
+    void collisionMeshScale(const float &x, const float &y, const float &z);
+    void nudgeCollisionMesh(const std::vector<float>& offset);
+
+    virtual void reset();
+    virtual void resize(const float &x, const float &y, const float &z);
     virtual void updatePhysics(const float& delta_t);
     virtual void init(const std::shared_ptr<PhysicsState>& p);
-    // virtual void translateCollisionMeshToState();
-    // virtual void rotateCollisionMeshToState();
     virtual void setContextFromScene(const std::shared_ptr<SceneContext>& sceneContext);
     virtual void renderCollisionMesh(glm::mat4 &view, glm::mat4 &projPersp, const PhysicsState& oldState);
 
@@ -67,6 +68,7 @@ public:
     std::shared_ptr<PhysicsState> physics;
     GLint mvpModelLocation;
     std::shared_ptr<RenderObject> collidingWith;
+    std::vector<float> renderOffset;
 };
 
 
