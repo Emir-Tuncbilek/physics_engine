@@ -9,7 +9,6 @@ This project was developped on MacOS, but it should be cross-plateform compatibl
 ### Features left to implement
 -  Batch rendering for "CloudParticuleObject"s
 -  Octree for collision detection
--  Object orientation
 -  Inertia induced by collisions
 -  Variable forces
 -  Variable force vector-fields
