@@ -10,6 +10,7 @@
 #include <vector>
 #include <assert.h>
 #include <cmath>
+#include <cstdint>
 
 #define EVIL_CONSTANT 0x5f3759df
 
